@@ -1,0 +1,25 @@
+{
+  "pages": {
+    "/page": [
+      "static/chunks/node_modules_next_dist_1a6ee436._.js",
+      "static/chunks/app_favicon_ico_mjs_5c70e8e5._.js",
+      "static/chunks/node_modules_e30396df._.js",
+      "static/chunks/app_f2c02186._.js",
+      "static/chunks/[next]_internal_font_google_23ef89be._.css",
+      "static/chunks/app_layout_tsx_aaf7d535._.js",
+      "static/chunks/node_modules_@mui_material_44b4d995._.js",
+      "static/chunks/node_modules_zod_lib_index_mjs_ee760afb._.js",
+      "static/chunks/node_modules_c9cb4bbc._.js",
+      "static/chunks/app_components_076c7cc6._.js",
+      "static/chunks/app_page_tsx_38369394._.js",
+      "static/chunks/[turbopack]_browser_dev_hmr-client_hmr-client_ts_fff34f97._.js",
+      "static/chunks/node_modules_next_dist_compiled_react-dom_1f56dc06._.js",
+      "static/chunks/node_modules_next_dist_compiled_38d265cf._.js",
+      "static/chunks/node_modules_next_dist_client_c24f7707._.js",
+      "static/chunks/node_modules_next_dist_3bfaed20._.js",
+      "static/chunks/node_modules_@swc_helpers_cjs_00636ac3._.js",
+      "static/chunks/_e69f0d32._.js",
+      "static/chunks/_a2b209e9._.js"
+    ]
+  }
+}

@@ -1,6 +1,8 @@
-const page = () => {
-  return (
-    <div>page</div>
-  )
+import * as React from 'react';
+import Form from './components/Form';
+
+export default function Page() {
+    return (
+        <Form />
+    );
 }
-export default page
