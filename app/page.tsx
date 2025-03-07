@@ -1,8 +1,11 @@
 import * as React from 'react';
-import Form from './components/Form';
+import RegisterPage from './register/page';
 
-export default function Page() {
+
+const Page = async () => {
     return (
-        <Form />
-    );
+        <RegisterPage />
+    )
 }
+
+export default Page
