@@ -5,7 +5,8 @@ import axios from "axios";
 export const initializeLiff = async ({ setIintLine, setLoading, liffId, setUserId }: {
     setIintLine: React.Dispatch<React.SetStateAction<boolean>>,
     setUserId: React.Dispatch<React.SetStateAction<string>>,
-    setLoading: React.Dispatch<React.SetStateAction<boolean>>, liffId: string,
+    setLoading: React.Dispatch<React.SetStateAction<boolean>>,
+    liffId: string,
 }) => {
     try {
         await new Promise((resolve) => setTimeout(resolve, 3000));

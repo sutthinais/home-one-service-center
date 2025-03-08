@@ -22,16 +22,17 @@ const RegisterForm = () => {
   const liffId = process.env.NEXT_PUBLIC_LIFF_ID || "";
   const [isIintLine, setIintLine] = useState(false);
   const [isLoading, setLoading] = React.useState(false);
+  const [userId, setUserId] = React.useState("");
   const [open, setOpen] = React.useState({
     title: "",
     open: false,
   });
   const theme = useTheme();
   const u = theme.palette.background.default;
-  let userId = "U9c35e388d140d7173c08374ca65cc035";
+  // let userId = "U9c35e388d140d7173c08374ca65cc035";
   useEffect(() => {
     setLoading(true);
-    initializeLiff({ setIintLine, setLoading, liffId });
+    initializeLiff({ setIintLine, setLoading, liffId, setUserId });
   }, []);
 
   const regisger = async (data: SignInFormData) => {
