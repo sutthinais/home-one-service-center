@@ -12,7 +12,9 @@ export const initializeLiff = async ({ setIintLine, setLoading, liffId, setUserI
         await new Promise((resolve) => setTimeout(resolve, 3000));
         const liff = (await import('@line/liff')).default;
         await liff.init({ liffId });
-        setUserId(await getEnvironmentLine());
+        const user = await liff.getProfile();
+        if (!user) throw 'e';
+        setUserId(user.userId);
         setIintLine(true);
         setLoading(false);
     } catch (error) {
