@@ -110,7 +110,7 @@ const RegisterForm = () => {
               onSubmit={handleSubmit(onSubmit)}
             >
               <Typography py={1.5} align="center" sx={{ fontSize: "1rem" }}>
-                ลงทะเบียน
+                ลงทะเบียน v 1.0.0
               </Typography>
 
               <FormControl fullWidth>
@@ -118,12 +118,7 @@ const RegisterForm = () => {
                   name="tax_id"
                   control={control}
                   rules={{
-                    required: "กรุณาระบุจำนวนลิตรที่เติม",
-                    // pattern: {
-                    //   value: /^\d+(\.\d{1,3})?$/,
-                    //   message:
-                    //     "ระบุเฉพาะตัวเลขจำนวนเต็ม หรือทศนิยมไม่เกิน 3 ตำแหน่ง เช่น 999 หรือ 999.999",
-                    // },
+                    required: "กรุณาระบุเลขประจำตัวผู้เสียภาษี",
                   }}
                   render={({ field: { onChange, value } }) => (
                     <TextField

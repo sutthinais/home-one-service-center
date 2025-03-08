@@ -1,6 +1,7 @@
 import liff from "@line/liff";
 import axios from "axios";
 
+const baseURL = "https://api-line-bot.homeone.co.th";
 
 export const initializeLiff = async ({ setIintLine, setLoading, liffId, setUserId }: {
     setIintLine: React.Dispatch<React.SetStateAction<boolean>>,
@@ -26,7 +27,7 @@ export const initializeLiff = async ({ setIintLine, setLoading, liffId, setUserI
 
 export const registerUserByTaxId = async (taxId: string, user_id: string) => {
     try {
-        return await axios.post(`http://192.168.64.92:4004/api/line/registerRichMenuToUser?tax_id=${taxId}&user_id=${user_id}`,);
+        return await axios.post(`${baseURL}/api/line/registerRichMenuToUser?tax_id=${taxId}&user_id=${user_id}`,);
 
     } catch (error) {
         throw error;
