@@ -31,7 +31,6 @@ const RegisterForm = () => {
   const u = theme.palette.background.default;
   // let userId = "U9c35e388d140d7173c08374ca65cc035";
   useEffect(() => {
-    setLoading(true);
     initializeLiff({ setIintLine, setLoading, liffId, setUserId });
   }, []);
 

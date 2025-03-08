@@ -9,16 +9,17 @@ export const initializeLiff = async ({ setIintLine, setLoading, liffId, setUserI
     liffId: string,
 }) => {
     try {
-        await new Promise((resolve) => setTimeout(resolve, 3000));
+        // await new Promise((resolve) => setTimeout(resolve, 3000));
         const liff = (await import('@line/liff')).default;
         await liff.init({ liffId });
-        const user = await liff.getProfile();
-        if (!user) throw 'e';
-        setUserId(user.userId);
+        const user = await getEnvironmentLine();
+        setUserId(user);
         setIintLine(true);
         setLoading(false);
     } catch (error) {
         throw error;
+    } finally {
+        setLoading(false);
     }
 };
 
@@ -39,7 +40,7 @@ export const getEnvironmentLine = async (): Promise<string> => {
         if (!user) throw 'e';
         return user.userId;
     } catch (error) {
-        throw Error("is not login");
+        throw "is not login";
     }
 }
 
