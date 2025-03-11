@@ -1,28 +1,60 @@
 import liff from "@line/liff";
 import axios from "axios";
-
 const baseURL = "https://api-line-bot.homeone.co.th";
+import { useEffect, useState } from "react";
 
-export const initializeLiff = async ({ setIintLine, setLoading, liffId, setUserId }: {
-    setIintLine: React.Dispatch<React.SetStateAction<boolean>>,
-    setUserId: React.Dispatch<React.SetStateAction<string>>,
-    setLoading: React.Dispatch<React.SetStateAction<boolean>>,
-    liffId: string,
-}) => {
-    try {
-        // await new Promise((resolve) => setTimeout(resolve, 3000));
-        const liff = (await import('@line/liff')).default;
-        await liff.init({ liffId });
-        setIintLine(true);
-        const user = await getEnvironmentLine();
-        setUserId(user);
-        setLoading(false);
-    } catch (error) {
-        throw error;
-    } finally {
-        setLoading(false);
-    }
+
+const useLiff = (liffId: string) => {
+    const [profile, setProfile] = useState<any>(null);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        const initializeLiff = async () => {
+            try {
+                await liff.init({ liffId });
+                if (!liff.isLoggedIn()) {
+                    liff.login();
+                } else {
+                    const userProfile = await liff.getProfile();
+                    setProfile(userProfile);
+                    setIsLoggedIn(true);
+                }
+            } catch (err) {
+                setError("Failed to initialize LIFF");
+                console.error(err);
+            }
+        };
+
+        initializeLiff();
+    }, [liffId]);
+
+    return { profile, isLoggedIn, error };
 };
+
+export default useLiff;
+
+
+// export const initializeLiff = async ({ setIintLine, setLoading, liffId, setUserId }: {
+//     setIintLine: React.Dispatch<React.SetStateAction<boolean>>,
+//     setUserId: React.Dispatch<React.SetStateAction<string>>,
+//     setLoading: React.Dispatch<React.SetStateAction<boolean>>,
+//     liffId: string,
+// }) => {
+//     try {
+//         // await new Promise((resolve) => setTimeout(resolve, 3000));
+//         const liff = (await import('@line/liff')).default;
+//         await liff.init({ liffId });
+//         setIintLine(true);
+//         const user = await getEnvironmentLine();
+//         setUserId(user);
+//         setLoading(false);
+//     } catch (error) {
+//         throw error;
+//     } finally {
+//         setLoading(false);
+//     }
+// };
 
 
 export const registerUserByTaxId = async (taxId: string, user_id: string) => {
@@ -35,18 +67,18 @@ export const registerUserByTaxId = async (taxId: string, user_id: string) => {
 }
 
 
-export const getEnvironmentLine = async (): Promise<string> => {
-    try {
-        if (liff.isLoggedIn()) {
-            var user = await liff.getProfile();
-            if (!user) throw 'e';
-            return user.userId;
-        } else {
-            throw 'e';
-        }
+// export const getEnvironmentLine = async (): Promise<string> => {
+//     try {
+//         if (await liff.isLoggedIn()) {
+//             var user = await liff.getProfile();
+//             if (!user) throw 'e';
+//             return user.userId;
+//         } else {
+//             throw 'e';
+//         }
 
-    } catch (error) {
-        throw "is not login";
-    }
-}
+//     } catch (error) {
+//         throw "is not login";
+//     }
+// }
 
