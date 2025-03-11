@@ -13,9 +13,9 @@ export const initializeLiff = async ({ setIintLine, setLoading, liffId, setUserI
         // await new Promise((resolve) => setTimeout(resolve, 3000));
         const liff = (await import('@line/liff')).default;
         await liff.init({ liffId });
+        setIintLine(true);
         const user = await getEnvironmentLine();
         setUserId(user);
-        setIintLine(true);
         setLoading(false);
     } catch (error) {
         throw error;
@@ -37,9 +37,14 @@ export const registerUserByTaxId = async (taxId: string, user_id: string) => {
 
 export const getEnvironmentLine = async (): Promise<string> => {
     try {
-        var user = await liff.getProfile();
-        if (!user) throw 'e';
-        return user.userId;
+        if (liff.isLoggedIn()) {
+            var user = await liff.getProfile();
+            if (!user) throw 'e';
+            return user.userId;
+        } else {
+            throw 'e';
+        }
+
     } catch (error) {
         throw "is not login";
     }

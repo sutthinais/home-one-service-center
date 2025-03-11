@@ -32,7 +32,17 @@ const RegisterForm = () => {
   const u = theme.palette.background.default;
 
   useEffect(() => {
-    initializeLiff({ setIintLine, setLoading, liffId, setUserId });
+    const init = async () => {
+      try {
+        await initializeLiff({ setIintLine, setLoading, liffId, setUserId });
+      } catch (e: any) {
+        setOpen({
+          title: e,
+          open: true,
+        });
+      }
+    };
+    init();
   }, []);
 
   const regisger = async (data: SignInFormData) => {
@@ -87,6 +97,7 @@ const RegisterForm = () => {
   return (
     <Box>
       <Typography>ISLOGGIN : {isIintLine}</Typography>
+      <Typography>ISLOGGIN : {}</Typography>
       <Typography>ISLOGGIN : {liffId}</Typography>
       <Loading open={isLoading} />
       <AlertDialog
