@@ -20,6 +20,7 @@ import { SignInFormData } from "@/schemas/SignInSchema";
 import toast from "react-hot-toast";
 import liff from "@line/liff";
 import { UserCheck } from "@phosphor-icons/react";
+import { color } from "framer-motion";
 
 const RegisterForm = () => {
   const liffid = CONFIG.NEXT_PUBLIC_LIFF_ID || "";
@@ -87,7 +88,7 @@ const RegisterForm = () => {
             onSubmit={handleSubmit(onSubmit)}
           >
             <Typography py={1.5} align="center" sx={{ fontSize: "1rem" }}>
-              ลงทะเบียน v 1.0.0
+              ลงทะเบียน
             </Typography>
 
             <FormControl fullWidth>
@@ -127,6 +128,7 @@ const RegisterForm = () => {
                 isProcessing={isLoading}
               />
             </Box>
+            <Typography sx={{ color: "gray" }}>v 1.0.1</Typography>
           </Box>
         </Grid>
       </Grid>
