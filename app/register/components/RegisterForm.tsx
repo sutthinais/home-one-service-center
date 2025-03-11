@@ -65,8 +65,8 @@ const RegisterForm = () => {
     }
   };
 
-  if (error) return <NotFound />;
-  if (!isLoggedIn) return <Loading open={true} />;
+  // if (error) return <NotFound />;
+  // if (!isLoggedIn) return <Loading open={true} />;
 
   return (
     <Box>
@@ -128,7 +128,9 @@ const RegisterForm = () => {
                 isProcessing={isLoading}
               />
             </Box>
-            <Typography sx={{ color: "gray" }}>v 1.0.1</Typography>
+            <Typography sx={{ color: "gray", textAlign: "center", mt: 2 }}>
+              v 1.0.0
+            </Typography>
           </Box>
         </Grid>
       </Grid>
