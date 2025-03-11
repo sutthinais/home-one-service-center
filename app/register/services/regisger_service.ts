@@ -1,10 +1,13 @@
+
 import liff from "@line/liff";
 import axios from "axios";
 const baseURL = "https://api-line-bot.homeone.co.th";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 
-const useLiff = (liffId: string) => {
+
+export const useLiff = (liffId: string) => {
     const [profile, setProfile] = useState<any>(null);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -14,15 +17,16 @@ const useLiff = (liffId: string) => {
             try {
                 await liff.init({ liffId });
                 if (!liff.isLoggedIn()) {
-                    liff.login();
+                    // liff.login();
+                    throw 'not support external browser'
                 } else {
                     const userProfile = await liff.getProfile();
                     setProfile(userProfile);
                     setIsLoggedIn(true);
+                    toast.success("Logged in successfully");
                 }
             } catch (err) {
                 setError("Failed to initialize LIFF");
-                console.error(err);
             }
         };
 
@@ -32,7 +36,7 @@ const useLiff = (liffId: string) => {
     return { profile, isLoggedIn, error };
 };
 
-export default useLiff;
+
 
 
 // export const initializeLiff = async ({ setIintLine, setLoading, liffId, setUserId }: {
