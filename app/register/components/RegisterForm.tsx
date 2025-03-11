@@ -65,7 +65,7 @@ const RegisterForm = () => {
   };
 
   if (error) return <NotFound />;
-  if (!isLoggedIn) return <NotFound />;
+  if (!isLoggedIn) return <Loading open={true} />;
 
   return (
     <Box>
