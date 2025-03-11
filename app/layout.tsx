@@ -23,6 +23,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="th">
+      <meta name="mobile-web-app-capable" content="yes" />
+      <meta name="apple-mobile-web-app-capable" content="yes" />
       <body style={{ margin: 0, padding: 0 }} className={noto_th.variable}>
         <AppRouterCacheProvider>
           <ThemeCustomProvider>
