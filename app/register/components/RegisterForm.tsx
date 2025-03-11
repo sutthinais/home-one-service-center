@@ -79,6 +79,7 @@ const RegisterForm = () => {
         height="100vh"
         sx={{ backgroundColor: u }}
       >
+        <Loading open={isLoading} />
         <Grid size={{ xs: 12, md: 6 }} sx={{ px: { xs: 5, md: 0 } }}>
           <Box
             sx={{ py: 5, bgcolor: "white", px: 5, borderRadius: 4 }}
