@@ -20,7 +20,6 @@ import { SignInFormData } from "@/schemas/SignInSchema";
 import toast from "react-hot-toast";
 import liff from "@line/liff";
 import { UserCheck } from "@phosphor-icons/react";
-import { color } from "framer-motion";
 
 const RegisterForm = () => {
   const liffid = CONFIG.NEXT_PUBLIC_LIFF_ID || "";
@@ -80,10 +79,14 @@ const RegisterForm = () => {
         height="100vh"
         sx={{ backgroundColor: u }}
       >
-        <Loading open={isLoading} />
         <Grid size={{ xs: 12, md: 6 }} sx={{ px: { xs: 5, md: 0 } }}>
           <Box
-            sx={{ py: 5, bgcolor: "white", px: 5, borderRadius: 4 }}
+            sx={{
+              py: 5,
+              bgcolor: "white",
+              px: 5,
+              borderRadius: 4,
+            }}
             component="form"
             onSubmit={handleSubmit(onSubmit)}
           >
