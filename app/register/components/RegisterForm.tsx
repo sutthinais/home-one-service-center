@@ -9,8 +9,20 @@ const RegisterForm = () => {
   const liffid = CONFIG.NEXT_PUBLIC_LIFF_ID || "";
   const { profile, isLoggedIn, error } = useLiff(liffid);
 
-  if (error) return <p>Error: {error}</p>;
-  if (!isLoggedIn) return <p>Logging in...</p>;
+  if (error)
+    return (
+      <div>
+        <p>liffid: {liffid}</p>
+        <p>Error: {error}</p>
+      </div>
+    );
+  if (!isLoggedIn)
+    return (
+      <div>
+        <p>liffid: {liffid}</p>
+        <p>Logging in...</p>
+      </div>
+    );
 
   return (
     <div>
