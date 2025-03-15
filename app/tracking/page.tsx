@@ -90,7 +90,7 @@ export default function TrackingPage({
     <Grid
       container
       justifyContent={"center"}
-      mt={5}
+      mt={{ xs: 0, md: 2 }}
       p={0}
       sx={{
         backgroundColor: grey[100],
@@ -104,13 +104,13 @@ export default function TrackingPage({
       }}
     >
       <Loading open={loading} />
-      <Grid sx={{ backgroundColor: grey[100] }} size={{ xs: 11, md: 8 }}>
+      <Grid sx={{ backgroundColor: grey[100] }} size={{ xs: 12, md: 8 }}>
         <Box
           sx={{
             // width: "100%",
             textAlign: "center",
             backgroundColor: "white",
-            borderRadius: 4,
+            borderRadius: { xs: 0, md: 4 },
             p: 2,
           }}
         >
@@ -172,7 +172,12 @@ export default function TrackingPage({
                 square={true}
                 disableGutters={false}
                 defaultExpanded={item.show_detail}
-                sx={{ borderRadius: 2, backgroundColor: "white" }}
+                elevation={0}
+                sx={{
+                  borderRadius: 2,
+                  backgroundColor: "white",
+                  border: `solid 1px ${grey[400]}`,
+                }}
               >
                 <AccordionSummary
                   expandIcon={<ExpandMoreIcon />}
@@ -401,7 +406,7 @@ export default function TrackingPage({
                         container
                         spacing={1}
                         mt={2}
-                        sx={{ backgroundColor: "red" }}
+                        sx={{ backgroundColor: "white" }}
                       >
                         {item.images.map((image, inex) => (
                           <Grid size={{ xs: 12, md: 6 }} key={inex}>
