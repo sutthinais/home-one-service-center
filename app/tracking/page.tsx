@@ -65,7 +65,7 @@ export default function TrackingPage({
     try {
       const response = await fetch(
         // `http://localhost:4004/api/line/getCurrentTruck?text=${billNumber}`
-        `https://api-line-bot.homeone.co.th/api/line/getCurrentTruck?text=${billNumber}]`
+        `https://api-line-bot.homeone.co.th/api/line/getCurrentTruck?text=${billNumber}`
       );
 
       const data = await response.json();
@@ -87,40 +87,48 @@ export default function TrackingPage({
     }
   };
   return (
-    <Box
+    <Grid
+      container
+      justifyContent={"center"}
+      mt={5}
+      p={0}
       sx={{
         backgroundColor: grey[100],
-        width: "100vw",
-        height: "100vh",
-        display: "flex",
+
+        // height: "100vh",
+        // display: "flex",
         // justifyContent: "center",
-        alignItems: "flex-start",
-        flexDirection: "column",
+        // alignItems: "center",
+        // direction: "ltr",
         // alignContent: "center",
       }}
     >
       <Loading open={loading} />
-      <Container maxWidth="sm">
+      <Grid sx={{ backgroundColor: grey[100] }} size={{ xs: 11, md: 8 }}>
         <Box
           sx={{
+            // width: "100%",
             textAlign: "center",
-            margin: 4,
             backgroundColor: "white",
             borderRadius: 4,
-            padding: 2,
+            p: 2,
           }}
         >
           <Box>
             <Box
               sx={{
                 display: "flex",
-                flexDirection: "row",
+                flexDirection: { xs: "column", sm: "row" },
                 justifyContent: "center",
                 alignItems: "center",
               }}
             >
               <Image src={Logo.src} alt="Logo" width={100} height={45}></Image>
-              <Typography variant="h4" mb={0.5}>
+              <Typography
+                variant="h4"
+                mb={0.5}
+                display={{ xs: "none", md: "block" }}
+              >
                 ติดตามสถานะจัดส่งสินค้า
               </Typography>
             </Box>
@@ -266,10 +274,6 @@ export default function TrackingPage({
                         return (
                           <Stack
                             key={index}
-                            display={"flex"}
-                            justifyContent={"space-between"}
-                            alignItems={"center"}
-                            // alignContent={"flex-start"}
                             direction={"row"}
                             spacing={1}
                             my={2}
@@ -382,8 +386,9 @@ export default function TrackingPage({
                     )}
                   </Timeline>
                   <Divider />
+
                   {item.status === 4 && (
-                    <Stack mt={2}>
+                    <Stack my={2}>
                       <Typography
                         component="span"
                         variant="button"
@@ -391,22 +396,30 @@ export default function TrackingPage({
                       >
                         ภาพจัดส่งสินค้า
                       </Typography>
-                      <ImageList
-                        sx={{ width: "100%", height: 450 }}
-                        cols={2}
-                        rowHeight={164}
+                      <Grid
+                        size={{ xs: 12, sm: 12, md: 12 }}
+                        container
+                        spacing={1}
+                        mt={2}
+                        sx={{ backgroundColor: "red" }}
                       >
                         {item.images.map((image, inex) => (
-                          <ImageListItem key={inex}>
-                            <img
-                              srcSet={`${image}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
-                              src={`${image}?w=164&h=164&fit=crop&auto=format`}
-                              alt="image"
-                              loading="lazy"
+                          <Grid size={{ xs: 12, md: 6 }} key={inex}>
+                            <Box
+                              referrerPolicy="no-referrer"
+                              key={index}
+                              component={"img"}
+                              style={{
+                                width: "100%",
+                                height: 400,
+                                objectFit: "cover",
+                              }}
+                              src={image}
+                              alt={""}
                             />
-                          </ImageListItem>
+                          </Grid>
                         ))}
-                      </ImageList>
+                      </Grid>
                     </Stack>
                   )}
                 </AccordionDetails>
@@ -418,9 +431,8 @@ export default function TrackingPage({
             </Box>
           ))}
         </Box>
-      </Container>
-      <Container maxWidth="sm"></Container>
-    </Box>
+      </Grid>
+    </Grid>
   );
 }
 // X03-HSV6802-02160,X03-HSV6802-02182
