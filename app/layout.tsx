@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 import ThemeCustomProvider from "../providers/ThemeCustomProvider";
-import { Noto_Sans_Thai } from "next/font/google";
+import { Prompt } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 
-const noto_th = Noto_Sans_Thai({
+const noto_th = Prompt({
   weight: ["300", "400", "500", "700"],
   subsets: ["thai"],
   display: "swap",
@@ -27,10 +27,17 @@ export default function RootLayout({
       <meta name="apple-mobile-web-app-capable" content="yes" />
       <body style={{ margin: 0, padding: 0 }} className={noto_th.variable}>
         <AppRouterCacheProvider>
-          <ThemeCustomProvider>
-            <Toaster position="bottom-center" />
-            {children}
-          </ThemeCustomProvider>
+          <ThemeCustomProvider>{children}</ThemeCustomProvider>
+          <Toaster
+            position="bottom-right"
+            toastOptions={{
+              duration: 5000,
+              style: {
+                zIndex: 9999,
+                fontFamily: noto_th.style.fontFamily,
+              },
+            }}
+          />
         </AppRouterCacheProvider>
       </body>
     </html>
