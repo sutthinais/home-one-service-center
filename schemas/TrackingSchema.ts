@@ -44,7 +44,7 @@ export const TrackingSchema = z.object({
   ref_doc_no: z.string(),
   status: z.number(),
   license_plate: z.string(),
-  truck_gps_code: z.string(),
+  truck_gps_code: z.union([z.string(), z.null()]),
   history: z.array(HistorySchema),
   history_booking: z.array(HistorySchema),
   tuck_location: z.union([TuckLocationSchema, z.null()]),
