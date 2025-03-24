@@ -260,7 +260,6 @@ const RegisterForm = () => {
                   type="tel"
                   variant="outlined"
                   required
-                  error={!!error}
                   value={phoneNumber}
                   onChange={(e) =>
                     setPhoneNumber(e.target.value.replace(/[^0-9]/g, ""))
