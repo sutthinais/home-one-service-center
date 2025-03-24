@@ -72,7 +72,7 @@ export default function TrackingPage({
       fetchTrackingData(profile?.userId ?? "");
     }
     setLoading(false);
-  });
+  }, []);
 
   const fetchTrackingData = async (userId: string) => {
     setLoading(true);
