@@ -59,17 +59,19 @@ export default function TrackingPage({
   params: Promise<{ slug: string }>;
 }) {
   const liffid = CONFIG.NEXT_PUBLIC_LIFF_ID_TRACKING || "";
-  const { profile, isLoggedIn } = useLiff(liffid);
+
   const [billNumber, setBillNumber] = useState("");
   const [data, setData] = useState<Tracking[] | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
+  const { profile, isLoggedIn } = useLiff(liffid);
   useEffect(() => {
     if (isLoggedIn) {
       setLoading(true);
       setData(null);
       fetchTrackingData(profile?.userId ?? "");
     }
+    setLoading(false);
   });
 
   const fetchTrackingData = async (userId: string) => {
@@ -92,13 +94,6 @@ export default function TrackingPage({
       p={0}
       sx={{
         backgroundColor: grey[100],
-
-        // height: "100vh",
-        // display: "flex",
-        // justifyContent: "center",
-        // alignItems: "center",
-        // direction: "ltr",
-        // alignContent: "center",
       }}
     >
       <Loading open={loading} />
@@ -456,12 +451,13 @@ export default function TrackingPage({
             </Box>
           ))}
 
-          {data === null && (
-            <Box height={"400px"} alignContent={"center"}>
-              <Empty size={32} color="grey" />
-              <Typography>ค้นหาเลขที่บิลขายเลย</Typography>
-            </Box>
-          )}
+          {data === null ||
+            (data.length === 0 && (
+              <Box height={"400px"} alignContent={"center"}>
+                <Empty size={32} color="grey" />
+                <Typography>ค้นหาเลขที่บิลขายเลย</Typography>
+              </Box>
+            ))}
         </Box>
       </Grid>
     </Grid>

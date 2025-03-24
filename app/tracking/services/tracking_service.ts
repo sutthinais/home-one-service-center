@@ -5,6 +5,7 @@ import axios from "axios";
 // const baseURL = "http://192.168.64.92:4004";
 const baseURL = "https://api-line-bot.homeone.co.th";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 
 export const useLiff = (liffId: string) => {
@@ -22,6 +23,7 @@ export const useLiff = (liffId: string) => {
                     const userProfile = await liff.getProfile();
                     setProfile(userProfile);
                     setIsLoggedIn(true);
+                    toast.success('เข้าสู่ระบบสำเร็จ');
                 }
             } catch (err) {
                 setIsLoggedIn(false);
