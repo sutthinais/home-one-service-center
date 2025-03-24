@@ -58,7 +58,7 @@ export default function TrackingPage({
 }: {
   params: Promise<{ slug: string }>;
 }) {
-  const liffid = CONFIG.NEXT_PUBLIC_LIFF_ID || "";
+  const liffid = CONFIG.NEXT_PUBLIC_LIFF_ID_TRACKING || "";
   const { profile, isLoggedIn } = useLiff(liffid);
   const [billNumber, setBillNumber] = useState("");
   const [data, setData] = useState<Tracking[] | null>(null);

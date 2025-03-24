@@ -1,3 +1,4 @@
 export const CONFIG = {
-    NEXT_PUBLIC_LIFF_ID: process.env.NEXT_PUBLIC_LIFF_ID || "",
-}
+  NEXT_PUBLIC_LIFF_ID: process.env.NEXT_PUBLIC_LIFF_ID || "",
+  NEXT_PUBLIC_LIFF_ID_TRACKING: process.env.NEXT_PUBLIC_LIFF_ID_TRACKING || "",
+};
