@@ -20,11 +20,15 @@ import React from "react";
 import {
   findUserByIdService,
   registerUserByTaxId,
+  useLiff,
 } from "../services/regisger_service";
 import liff from "@line/liff";
+import { CONFIG } from "@/config/dotenv";
 
-const RegisterForm = ({ prop }: { prop: any }) => {
+const RegisterForm = () => {
   const routeer = useRouter();
+  const liffid = CONFIG.NEXT_PUBLIC_LIFF_ID || "";
+  const { profile, isLoggedIn } = useLiff(liffid);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [loading, setLoading] = useState(false);
   const [otp, setOtp] = useState("");
@@ -123,7 +127,10 @@ const RegisterForm = ({ prop }: { prop: any }) => {
     try {
       await confirmationResult?.confirm(otp);
       routeer.refresh();
-      var response = await registerUserByTaxId(phoneNumber, prop?.userId ?? "");
+      var response = await registerUserByTaxId(
+        phoneNumber,
+        profile?.userId ?? ""
+      );
       if (response.status === 200) {
         if (response.data.status === 1)
           throw new Error(`${response.data.message}`);
