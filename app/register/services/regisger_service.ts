@@ -1,16 +1,14 @@
-
+"use client"
 import liff from "@line/liff";
 import axios from "axios";
+// const baseURL = "http://192.168.64.92:4004";
 const baseURL = "https://api-line-bot.homeone.co.th";
 import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
-
 
 
 export const useLiff = (liffId: string) => {
     const [profile, setProfile] = useState<any>(null);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         const initializeLiff = async () => {
@@ -23,48 +21,33 @@ export const useLiff = (liffId: string) => {
                     const userProfile = await liff.getProfile();
                     setProfile(userProfile);
                     setIsLoggedIn(true);
-                    toast.success("Logged in successfully");
                 }
             } catch (err) {
-                setError("Failed to initialize LIFF");
+                setIsLoggedIn(false);
             }
         };
 
         initializeLiff();
     }, [liffId]);
 
-    return { profile, isLoggedIn, error };
+    return { profile, isLoggedIn };
 };
-
-
-
-
-// export const initializeLiff = async ({ setIintLine, setLoading, liffId, setUserId }: {
-//     setIintLine: React.Dispatch<React.SetStateAction<boolean>>,
-//     setUserId: React.Dispatch<React.SetStateAction<string>>,
-//     setLoading: React.Dispatch<React.SetStateAction<boolean>>,
-//     liffId: string,
-// }) => {
-//     try {
-//         // await new Promise((resolve) => setTimeout(resolve, 3000));
-//         const liff = (await import('@line/liff')).default;
-//         await liff.init({ liffId });
-//         setIintLine(true);
-//         const user = await getEnvironmentLine();
-//         setUserId(user);
-//         setLoading(false);
-//     } catch (error) {
-//         throw error;
-//     } finally {
-//         setLoading(false);
-//     }
-// };
 
 
 export const registerUserByTaxId = async (taxId: string, user_id: string) => {
     try {
         return await axios.post(`${baseURL}/api/line/registerRichMenuToUser?tax_id=${taxId}&user_id=${user_id}`,);
 
+    } catch (error) {
+
+
+        throw error;
+    }
+}
+
+export const findUserByIdService = async (phone_number: string) => {
+    try {
+        return await axios.get(`${baseURL}/api/line/findUserByIdController?phone_number=${phone_number}`,);
     } catch (error) {
         throw error;
     }

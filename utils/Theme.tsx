@@ -1,13 +1,10 @@
 import { createTheme, ThemeOptions } from "@mui/material";
-import { orange, grey } from "@mui/material/colors";
+import { orange, grey, red, blue } from "@mui/material/colors";
 
 const themeOptions: ThemeOptions = {
   palette: {
     primary: {
       main: grey[900],
-    },
-    background: {
-      default: "#F9F9FA",
     },
   },
   typography: {
@@ -44,10 +41,15 @@ const themeOptions: ThemeOptions = {
         root: {
           "& .MuiOutlinedInput-notchedOutline": {
             border: "greay[400]",
+
+            borderRadius: 6,
           },
-          backgroundColor: "#F9F9FA",
-          height: 47,
-          borderRadius: 12,
+          "&.Mui-focused": {
+            "& .MuiOutlinedInput-notchedOutline": {
+              border: `1px solid ${blue[600]}`,
+            },
+            borderRadius: 6,
+          },
         },
       },
     },
@@ -55,12 +57,14 @@ const themeOptions: ThemeOptions = {
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: 12,
+          borderRadius: 6,
           // color: "#FFFFFF",
           // border: `1px solid ${grey[900]}`,
           // backgroundColor: grey[900],
           textTransform: "none",
           boxShadow: "none",
+          height: 47,
+
           "-:disabled": {
             backgroundColor: grey[400],
             color: grey[100],

@@ -69,6 +69,7 @@ export default function TrackingPage({
       );
 
       const data = await response.json();
+      console.log(data);
 
       if (data.status !== 0) {
         throw `ไม่พบข้อมูล ${billNumber}`;

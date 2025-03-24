@@ -1,55 +1,130 @@
 "use client";
 
-import React from "react";
-
-import { registerUserByTaxId, useLiff } from "../services/regisger_service";
-import { CONFIG } from "@/config/dotenv";
-import NotFound from "@/components/NotFound";
+import { useEffect, useState, useTransition } from "react";
+import { Box, Button, Stack, TextField, Typography } from "@mui/material";
+import { useRouter } from "next/navigation";
 import {
-  Box,
-  FormControl,
-  TextField,
-  Typography,
-  useTheme,
-} from "@mui/material";
-import Loading from "./Loading";
-import { BaseButton } from "@/components/Button";
+  ConfirmationResult,
+  RecaptchaVerifier,
+  signInWithPhoneNumber,
+} from "firebase/auth";
+import { auth } from "@/firebase";
+import { OTP } from "@/components/Otp";
 import Grid from "@mui/material/Grid2";
-import { Controller, useForm } from "react-hook-form";
-import { SignInFormData } from "@/schemas/SignInSchema";
+import { grey, red, teal } from "@mui/material/colors";
+import Loading from "./Loading";
+import { ShieldCheck } from "@phosphor-icons/react";
 import toast from "react-hot-toast";
+
+import React from "react";
+import {
+  findUserByIdService,
+  registerUserByTaxId,
+} from "../services/regisger_service";
 import liff from "@line/liff";
-import { UserCheck } from "@phosphor-icons/react";
 
-const RegisterForm = () => {
-  const liffid = CONFIG.NEXT_PUBLIC_LIFF_ID || "";
-  const { profile, isLoggedIn, error } = useLiff(liffid);
-  const [isLoading, setLoading] = React.useState(false);
+const RegisterForm = ({ prop }: { prop: any }) => {
+  const routeer = useRouter();
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [resendContdown, setResendCountdown] = useState(0);
 
-  const theme = useTheme();
-  const u = theme.palette.background.default;
+  const [recapchVerifier, setRecapchVerifier] =
+    useState<RecaptchaVerifier | null>(null);
 
-  const {
-    register,
-    control,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<SignInFormData>({
-    // mode: "all",
-    // resolver: zodResolver(SignInSchema),
-  });
+  const [confirmationResult, setConfirmationResult] =
+    useState<ConfirmationResult | null>(null);
 
-  const onSubmit = async (data: SignInFormData) => {
-    data.user_id = profile?.userId ?? "";
-    await regisger(data);
+  const [isPending, startTransition] = useTransition();
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (resendContdown > 0) {
+      timer = setInterval(() => {
+        setResendCountdown((prev) => prev - 1);
+      }, 1000);
+    }
+    return () => clearTimeout(timer);
+  }, [resendContdown]);
+
+  useEffect(() => {
+    const recapchVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
+      size: "invisible",
+    });
+    setRecapchVerifier(recapchVerifier);
+  }, []);
+
+  useEffect(() => {
+    const hashEnterAllDigits = otp.length === 6;
+    if (hashEnterAllDigits) {
+      verifyOtp();
+    }
+  }, [otp]);
+
+  function delay(ms: number) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  const requestOtp = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      if (phoneNumber.length !== 10) throw new Error("Invalid phone number");
+      await delay(2000);
+      const user = await findUserById();
+      if (!user) throw new Error("User not found");
+
+      if (!recapchVerifier)
+        throw new Error("recapchVerifier is not initialized");
+
+      // ตรวจสอบหมายเลขโทรศัพท์และปรับรูปแบบ
+      const formattedPhoneNumber = phoneNumber.startsWith("0")
+        ? phoneNumber.slice(1)
+        : phoneNumber;
+
+      // ส่ง OTP
+      const confirmationResult = await signInWithPhoneNumber(
+        auth,
+        `+66${formattedPhoneNumber}`,
+        recapchVerifier
+      );
+
+      setConfirmationResult(confirmationResult);
+      setResendCountdown(60);
+    } catch (e: any) {
+      setResendCountdown(0);
+      if (e.code === "auth/invalid-phone-number") {
+        setError("หมายเลขโทรศัพท์ไม่ถูกต้อง");
+      } else if (e.code === "auth/too-many-requests") {
+        setError("Too many requests");
+      } else if (e.message === "User not found") {
+        setError("ท่านไม่ได้เป็นสมาชิก กรุณาติดต่อโฮมวันใกล้บ้านคุณ");
+      } else {
+        setError("ส่ง OTP ไม่สำเร็จ กรุณาลองอีกครั้งในภายหลัง");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const regisger = async (data: SignInFormData) => {
+  const verifyOtp = async () => {
+    setError(null);
     setLoading(true);
+    startTransition(async () => {
+      if (!confirmationResult) {
+        setError("Please request OTP first.");
+        return;
+      }
+    });
+
     try {
-      var response = await registerUserByTaxId(data.tax_id, data.user_id);
+      await confirmationResult?.confirm(otp);
+      routeer.refresh();
+      var response = await registerUserByTaxId(phoneNumber, prop?.userId ?? "");
       if (response.status === 200) {
-        console.log(response.data);
         if (response.data.status === 1)
           throw new Error(`${response.data.message}`);
         toast.success("ลงทะเบียนสำเร็จ");
@@ -57,87 +132,213 @@ const RegisterForm = () => {
       } else {
         throw "error";
       }
-    } catch (e: any) {
-      toast.error(e.message);
+    } catch (error) {
+      setError("ยืนยันรหัส OTP ไม่สำเร็จ กรุณาลองอีกครั้ง.");
     } finally {
       setLoading(false);
     }
   };
 
-  // if (error) return <NotFound />;
-  // if (!isLoggedIn) return <Loading open={true} />;
+  const findUserById = async (): Promise<string | null> => {
+    let userId = null;
+
+    try {
+      var response = await findUserByIdService(phoneNumber);
+      if (response.status === 200) {
+        if (response.data.status === 1)
+          throw new Error(`${response.data.message}`);
+        userId = response.data.data;
+        return userId;
+      } else {
+        throw "error";
+      }
+    } catch (e: any) {
+      return null;
+    }
+  };
 
   return (
-    <Box>
-      <Loading open={isLoading} />
+    <Grid
+      container
+      sx={{
+        backgroundColor: grey[100],
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh",
+      }}
+    >
+      <Loading open={loading} />
       <Grid
-        container
-        spacing={1}
-        alignItems="center"
-        justifyContent="center"
-        display="flex"
-        height="100vh"
-        sx={{ backgroundColor: u }}
+        size={{ xs: 11, md: 7 }}
+        p={4}
+        sx={{ backgroundColor: "white", borderRadius: "10px" }}
+        display={"flex"}
+        justifyContent={"center"}
+        alignItems={"center"}
+        direction={"column"}
+        flexDirection={"column"}
       >
-        <Grid size={{ xs: 12, md: 6 }} sx={{ px: { xs: 5, md: 0 } }}>
-          <Box
-            sx={{
-              py: 5,
-              bgcolor: "white",
-              px: 5,
-              borderRadius: 4,
-            }}
-            component="form"
-            onSubmit={handleSubmit(onSubmit)}
-          >
-            <Typography py={1.5} align="center" sx={{ fontSize: "1rem" }}>
-              ลงทะเบียน
-            </Typography>
-
-            <FormControl fullWidth>
-              <Controller
-                name="tax_id"
-                control={control}
-                rules={{
-                  required: "กรุณาระบุเลขประจำตัวผู้เสียภาษี",
-                }}
-                render={({ field: { onChange, value } }) => (
-                  <TextField
-                    id="standard-basic"
-                    variant="outlined"
-                    placeholder="เลขประจำตัวผู้เสียภาษี"
-                    helperText={errors.tax_id?.message}
-                    error={!!errors.tax_id}
-                    fullWidth
-                    onChange={onChange}
-                    value={value || ""}
-                    slotProps={{
-                      input: {
-                        endAdornment: <UserCheck size={30} />,
-                      },
-                    }}
-                  />
-                )}
-              />
-            </FormControl>
-
-            <Box mt={2}>
-              <BaseButton
-                text="ลงทะเบียน"
-                color="primary"
-                variant="contained"
-                fullWidth
-                type="submit"
-                isProcessing={isLoading}
-              />
+        {!confirmationResult && (
+          <Stack sx={{ display: "flex", flexDirection: "column" }} spacing={1}>
+            <Box
+              sx={{
+                height: "50px",
+                width: "50px",
+                backgroundColor: `${teal[100]}`,
+                borderRadius: 3,
+                alignItems: "center",
+                justifyContent: "center",
+                display: "flex",
+              }}
+            >
+              <ShieldCheck size={25} color={teal[600]} />
             </Box>
-            <Typography sx={{ color: "gray", textAlign: "center", mt: 2 }}>
-              v 1.0.0
+            <Typography align="left" sx={{ fontSize: "1.3rem" }}>
+              กรุณาระบุหมายเลขโทรศัพท์ของคุณ (ที่ลงทะเบียนไว้กับโฮมวัน)
             </Typography>
-          </Box>
-        </Grid>
+            <Typography
+              py={1}
+              align="left"
+              sx={{ fontSize: "1rem", color: grey[600] }}
+            >
+              กรุณากรอกหมายเลขโทรศัพท์ที่เชื่อมโยงกับอุปกรณ์ของคุณ
+              เราจะส่งรหัสยืนยันไปยังหมายเลขโทรศัพท์มือถือของคุณเมื่อคุณเข้าสู่ระบบ
+            </Typography>
+            <Stack
+              display={"flex"}
+              direction={"row"}
+              sx={{
+                alignContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <Box flex={1}>
+                <Typography
+                  align="left"
+                  sx={{ fontSize: "1rem", textAlign: "left" }}
+                >
+                  หมายเลขโทรศัพท์
+                </Typography>
+              </Box>
+            </Stack>
+            <Stack display={"flex"} direction={"row"}>
+              <Box
+                flex={1}
+                sx={{
+                  height: 48,
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  borderRadius: 2,
+                  border: `1px solid ${grey[400]}`,
+                }}
+              >
+                {" "}
+                <Typography color={`${grey[700]}`}>+66 </Typography>
+              </Box>
+              <Box sx={{ width: 5 }}></Box>
+              <Box
+                flex={4}
+                sx={{
+                  height: 50,
+                  width: "100%",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  //   backgroundColor: "blue",
+                }}
+              >
+                <TextField
+                  type="tel"
+                  variant="outlined"
+                  required
+                  error={!!error}
+                  value={phoneNumber}
+                  onChange={(e) =>
+                    setPhoneNumber(e.target.value.replace(/[^0-9]/g, ""))
+                  }
+                  placeholder="000-000-0000"
+                  fullWidth
+                  inputProps={{
+                    maxLength: 10,
+                    pattern: "[0-9]*",
+                  }}
+                />
+              </Box>
+            </Stack>
+          </Stack>
+        )}
+
+        {confirmationResult && (
+          <Stack
+            sx={{ display: "flex", flexDirection: "column" }}
+            spacing={1}
+            pt={4}
+          >
+            <Box
+              sx={{
+                height: "50px",
+                width: "50px",
+                backgroundColor: `${teal[100]}`,
+                borderRadius: 3,
+                alignItems: "center",
+                justifyContent: "center",
+                display: "flex",
+              }}
+            >
+              <ShieldCheck size={25} color={teal[600]} />
+            </Box>
+            <Typography align="left" sx={{ fontSize: "1.3rem" }}>
+              ป้อนรหัสยืนยัน
+            </Typography>
+            <Typography
+              py={1}
+              align="left"
+              sx={{ fontSize: "1rem", color: grey[600] }}
+            >
+              ข้อความพร้อมรหัส 6 หลักได้ถูกส่งไปยัง 0{phoneNumber}
+              การดำเนินการดังกล่าว
+              ช่วยให้เราสามารถรักษาความปลอดภัยของบัญชีของคุณได้โดยการยืนยันว่าเป็นคุณจริงๆ
+            </Typography>
+
+            <Stack
+              display={"flex"}
+              direction={"row"}
+              alignContent={"center"}
+              alignItems={"center"}
+              justifyContent={"center"}
+              py={3}
+            >
+              <OTP value={otp} onChange={setOtp} separator="" length={6} />
+            </Stack>
+          </Stack>
+        )}
+        {error && (
+          <Typography variant="body2" mt={3} color={red[700]}>
+            {" "}
+            {error}
+          </Typography>
+        )}
+        <Button
+          onClick={requestOtp}
+          variant="contained"
+          fullWidth
+          sx={{ mt: 3, mb: 0 }}
+          type="button"
+          disabled={
+            !phoneNumber || phoneNumber.length !== 10 || resendContdown > 0
+          }
+        >
+          {resendContdown > 0
+            ? `ส่งรหัส OTP อีกครั้งใน ${resendContdown} วินาที`
+            : isPending
+            ? "กำลังส่งรหัส OTP..."
+            : `ส่งรหัส OTP`}
+        </Button>
+        <div id="recaptcha-container" />
       </Grid>
-    </Box>
+    </Grid>
   );
 };
 
