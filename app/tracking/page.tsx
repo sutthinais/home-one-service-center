@@ -107,56 +107,50 @@ export default function TrackingPage({
             p: 2,
           }}
         >
-          {!profile && (
-            <Box>
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: { xs: "column", sm: "row" },
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
+          <Box>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: { xs: "column", sm: "row" },
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Image src={Logo.src} alt="Logo" width={100} height={45}></Image>
+              <Typography
+                variant="h4"
+                mb={0.5}
+                display={{ xs: "none", md: "block" }}
               >
-                <Image
-                  src={Logo.src}
-                  alt="Logo"
-                  width={100}
-                  height={45}
-                ></Image>
-                <Typography
-                  variant="h4"
-                  mb={0.5}
-                  display={{ xs: "none", md: "block" }}
-                >
-                  ติดตามสถานะจัดส่งสินค้า
-                </Typography>
-              </Box>
-              <Typography color="textSecondary" variant="body1" mb={2}>
-                ท่านสามารถค้นหาเลขที่บิลขายได้มากกว่า 1 รายการ ด้วยการใช้ ,
-                ระหว่างบิลขาย
+                ติดตามสถานะจัดส่งสินค้า
               </Typography>
+            </Box>
+            <Typography color="textSecondary" variant="body1" mb={2}>
+              ท่านสามารถค้นหาเลขที่บิลขายได้มากกว่า 1 รายการ ด้วยการใช้ ,
+              ระหว่างบิลขาย
+            </Typography>
 
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "row",
-                  justifyContent: "center",
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "center",
 
-                  gap: 1,
-                }}
-              >
-                <TextField
-                  sx={{ flex: 3 }}
-                  type="text"
-                  variant="outlined"
-                  required
-                  value={billNumber}
-                  onChange={(e) => setBillNumber(e.target.value)}
-                  placeholder="หมายเลขบิลขาย"
-                  fullWidth
-                />
+                gap: 1,
+              }}
+            >
+              <TextField
+                sx={{ flex: 3 }}
+                type="text"
+                variant="outlined"
+                required
+                value={billNumber}
+                onChange={(e) => setBillNumber(e.target.value)}
+                placeholder="หมายเลขบิลขาย"
+                fullWidth
+              />
 
-                {/* <TextField
+              {/* <TextField
                 label="หมายเลขบิลขาย"
                 variant="outlined"
                 fullWidth
@@ -165,21 +159,20 @@ export default function TrackingPage({
                 sx={{ height: "58px" }}
               /> */}
 
-                <Button
-                  onClick={() => {
-                    fetchTrackingData(profile?.userId ?? "");
-                  }}
-                  sx={{ height: "50px", flex: 1 }}
-                  variant="contained"
-                  fullWidth
-                  type="button"
-                  disabled={billNumber.length === 0}
-                >
-                  ค้นหา
-                </Button>
-              </Box>
+              <Button
+                onClick={() => {
+                  fetchTrackingData(profile?.userId ?? "");
+                }}
+                sx={{ height: "50px", flex: 1 }}
+                variant="contained"
+                fullWidth
+                type="button"
+                disabled={billNumber.length === 0}
+              >
+                ค้นหา
+              </Button>
             </Box>
-          )}
+          </Box>
 
           {data?.map((item: Tracking, index: number) => (
             <Box key={index} my={1}>
