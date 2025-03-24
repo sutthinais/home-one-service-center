@@ -1,9 +1,9 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 import ThemeCustomProvider from "../providers/ThemeCustomProvider";
 import { Prompt } from "next/font/google";
 import { Toaster } from "react-hot-toast";
-import { green, grey } from "@mui/material/colors";
+import { grey } from "@mui/material/colors";
 
 const noto_th = Prompt({
   weight: ["300", "400", "500", "700"],
@@ -15,6 +15,13 @@ const noto_th = Prompt({
 export const metadata: Metadata = {
   title: "Homeone",
   description: "เว็บไซต์สำหรับบริการลูกค้า",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 export default function RootLayout({
