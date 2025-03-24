@@ -137,10 +137,10 @@ const RegisterForm = () => {
         toast.success("ลงทะเบียนสำเร็จ");
         liff.closeWindow();
       } else {
-        throw "error";
+        throw response;
       }
     } catch (error) {
-      setError("ยืนยันรหัส OTP ไม่สำเร็จ กรุณาลองอีกครั้ง.");
+      setError(`ยืนยันรหัส OTP ไม่สำเร็จ กรุณาลองอีกครั้ง. ${error}`);
     } finally {
       setLoading(false);
     }
