@@ -66,10 +66,12 @@ export default function TrackingPage({
 
   const { profile, isLoggedIn } = useLiff(liffid);
   useEffect(() => {
+    toast.success(profile?.userId ?? "not found user id");
     if (isLoggedIn) {
       setLoading(true);
       setData(null);
       fetchTrackingData(profile?.userId ?? "");
+
       // fetchTrackingData("U562cf69922740b4a95c48d2c57afe283");
     }
     setLoading(false);
