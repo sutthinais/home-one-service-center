@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 
-export const useLiff = (liffId: string) => {
+export const useLiff = (liffId: string, setData: React.Dispatch<React.SetStateAction<Tracking[] | null>>, setLoading: React.Dispatch<React.SetStateAction<boolean>>) => {
     const [profile, setProfile] = useState<any>(null);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -23,10 +23,16 @@ export const useLiff = (liffId: string) => {
                     const userProfile = await liff.getProfile();
                     setProfile(userProfile);
                     setIsLoggedIn(true);
-                    toast.success('เข้าสู่ระบบสำเร็จ');
+                    if (!userProfile) throw 'user is null';
+                    const response = await handleTrackShipment("x", userProfile?.userId ?? "");
+                    setData(response);
+                    // toast.success('เข้าสู่ระบบสำเร็จ');
                 }
             } catch (err) {
                 setIsLoggedIn(false);
+
+            } finally {
+                setLoading(false);
             }
         };
 

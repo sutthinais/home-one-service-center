@@ -64,18 +64,19 @@ export default function TrackingPage({
   const [data, setData] = useState<Tracking[] | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const { profile, isLoggedIn } = useLiff(liffid);
-  useEffect(() => {
-    toast.success(profile?.userId ?? "not found user id");
-    if (isLoggedIn) {
-      setLoading(true);
-      setData(null);
-      fetchTrackingData(profile?.userId ?? "");
+  const { profile, isLoggedIn } = useLiff(liffid, setData, setLoading);
 
-      // fetchTrackingData("U562cf69922740b4a95c48d2c57afe283");
-    }
-    setLoading(false);
-  }, []);
+  // useEffect(() => {
+  //   toast.success(profile?.userId ?? "not found user id");
+  //   if (isLoggedIn) {
+  //     setLoading(true);
+  //     setData(null);
+  //     fetchTrackingData(profile?.userId ?? "");
+
+  //     // fetchTrackingData("U562cf69922740b4a95c48d2c57afe283");
+  //   }
+  //   setLoading(false);
+  // }, [isLoggedIn]);
 
   const fetchTrackingData = async (userId: string) => {
     setLoading(true);
