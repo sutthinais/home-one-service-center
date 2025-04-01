@@ -38,8 +38,9 @@ export const useLiff = (liffId: string) => {
 
 export const handleTrackShipment = async (billNumber: string, userId: string): Promise<Tracking[]> => {
     var response_from_json: Tracking[] = [];
-
-    if (billNumber.trim().length == 0) return [];
+    if (!billNumber) {
+        billNumber = "x";
+    }
 
     try {
         const response = await fetch(
@@ -47,7 +48,6 @@ export const handleTrackShipment = async (billNumber: string, userId: string): P
         );
 
         const data = await response.json();
-        console.log(data);
 
         if (data.status !== 0) {
             throw `ไม่พบข้อมูล ${billNumber}`;

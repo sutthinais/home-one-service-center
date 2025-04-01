@@ -70,6 +70,7 @@ export default function TrackingPage({
       setLoading(true);
       setData(null);
       fetchTrackingData(profile?.userId ?? "");
+      // fetchTrackingData("U562cf69922740b4a95c48d2c57afe283");
     }
     setLoading(false);
   }, []);
@@ -77,10 +78,12 @@ export default function TrackingPage({
   const fetchTrackingData = async (userId: string) => {
     setLoading(true);
     setData(null);
+
     try {
       const response = await handleTrackShipment(billNumber, userId);
       setData(response);
     } catch (e: any) {
+      console.log(e);
     } finally {
       setLoading(false);
     }
