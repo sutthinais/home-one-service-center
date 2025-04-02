@@ -167,6 +167,7 @@ const RegisterForm = () => {
   return (
     <Grid
       container
+      size={{ xs: 11, md: 7 }}
       sx={{
         backgroundColor: grey[100],
         display: "flex",
@@ -187,7 +188,10 @@ const RegisterForm = () => {
         flexDirection={"column"}
       >
         {!confirmationResult && (
-          <Stack sx={{ display: "flex", flexDirection: "column" }} spacing={1}>
+          <Stack
+            sx={{ display: "flex", flexDirection: "column", width: "100%" }}
+            spacing={1}
+          >
             <Box
               sx={{
                 height: "50px",
@@ -229,31 +233,48 @@ const RegisterForm = () => {
                 </Typography>
               </Box>
             </Stack>
-            <Stack display={"flex"} direction={"row"}>
+            <Stack
+              display={"flex"}
+              direction={"row"}
+              alignItems={"center"}
+              height={"55px"}
+            >
               <Box
                 flex={1}
                 sx={{
-                  height: 48,
+                  height: "100%",
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
-                  borderRadius: 2,
-                  border: `1px solid ${grey[400]}`,
+                  // borderRadius: 2,
+                  // border: `1px solid ${grey[400]}`,
                 }}
               >
-                {" "}
-                <Typography color={`${grey[700]}`}>+66 </Typography>
+                {/* <Typography color={`${grey[700]}`}>+66 </Typography> */}
+                <TextField
+                  type="tel"
+                  variant="outlined"
+                  inputProps={{ min: 0, style: { textAlign: "center" } }}
+                  sx={{
+                    alignItems: "center",
+                    textAlign: "center",
+                  }}
+                  required
+                  disabled={true}
+                  value="+66 "
+                ></TextField>
               </Box>
               <Box sx={{ width: 5 }}></Box>
               <Box
                 flex={4}
                 sx={{
-                  height: 50,
+                  height: "100%",
                   width: "100%",
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
-                  //   backgroundColor: "blue",
+
+                  // backgroundColor: "blue",
                 }}
               >
                 <TextField
@@ -278,7 +299,7 @@ const RegisterForm = () => {
 
         {confirmationResult && (
           <Stack
-            sx={{ display: "flex", flexDirection: "column" }}
+            sx={{ display: "flex", flexDirection: "column", width: "100%" }}
             spacing={1}
             pt={4}
           >
@@ -326,6 +347,7 @@ const RegisterForm = () => {
             {error}
           </Typography>
         )}
+        {/* size={{ xs: 11, md: 7 }} */}
         <Button
           onClick={requestOtp}
           variant="contained"
@@ -337,10 +359,10 @@ const RegisterForm = () => {
           }
         >
           {resendContdown > 0
-            ? `ส่งรหัส OTP อีกครั้งใน ${resendContdown} วินาที`
+            ? `ขอรหัส OTP อีกครั้งใน ${resendContdown} วินาที`
             : isPending
-            ? "กำลังส่งรหัส OTP..."
-            : `ส่งรหัส OTP`}
+            ? "กำลังขอรหัส OTP..."
+            : `ขอรหัส OTP`}
         </Button>
         <div id="recaptcha-container" />
       </Grid>
