@@ -38,7 +38,7 @@ export const registerUserByTaxId = async (taxId: string, user_id: string) => {
       `${baseURL}/api/line/registerRichMenuToUser?tax_id=${taxId}&user_id=${user_id}`
     );
   } catch (error) {
-    throw error;
+    throw `${baseURL}/api/line/registerRichMenuToUser?tax_id=${taxId}&user_id=${user_id} ${error}`;
   }
 };
 

@@ -107,7 +107,8 @@ const RegisterForm = () => {
       } else if (e.message === "User not found") {
         setError("ท่านไม่ได้เป็นสมาชิก กรุณาติดต่อโฮมวันใกล้บ้านคุณ");
       } else {
-        setError("ส่ง OTP ไม่สำเร็จ กรุณาลองอีกครั้งในภายหลัง");
+        setError("ส่ง OTP ไม่สำเร็จ กรุณาลองอีกครั้งในภายหลัง\n" + e.message);
+        console.log(e);
       }
     } finally {
       setLoading(false);
