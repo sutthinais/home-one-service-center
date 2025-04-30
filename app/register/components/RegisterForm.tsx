@@ -14,7 +14,6 @@ import Grid from "@mui/material/Grid2";
 import { grey, red, teal } from "@mui/material/colors";
 import Loading from "./Loading";
 import { ShieldCheck } from "@phosphor-icons/react";
-import toast from "react-hot-toast";
 
 import React from "react";
 import {
@@ -24,6 +23,7 @@ import {
 } from "../services/regisger_service";
 import liff from "@line/liff";
 import { CONFIG } from "@/config/dotenv";
+import { toast } from "react-toastify";
 
 const RegisterForm = () => {
   const routeer = useRouter();
@@ -211,7 +211,7 @@ const RegisterForm = () => {
             <Typography
               py={1}
               align="left"
-              sx={{ fontSize: "1rem", color: grey[600] }}
+              sx={{ fontSize: "0.95rem", color: grey[600] }}
             >
               กรุณากรอกหมายเลขโทรศัพท์ที่เชื่อมโยงกับอุปกรณ์ของคุณ
               เราจะส่งรหัสยืนยันไปยังหมายเลขโทรศัพท์มือถือของคุณเมื่อคุณเข้าสู่ระบบ

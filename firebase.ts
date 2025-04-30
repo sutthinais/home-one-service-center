@@ -8,13 +8,13 @@ import { getAuth } from "firebase/auth";
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-    apiKey: "AIzaSyBDie8XN-VrDQ_dF2Abbnjuceg-r4N0p_w",
-    authDomain: "homeoneservicecenter.firebaseapp.com",
-    projectId: "homeoneservicecenter",
-    storageBucket: "homeoneservicecenter.firebasestorage.app",
-    messagingSenderId: "700301511820",
-    appId: "1:700301511820:web:5fe038c40a457b2026ffa9",
-    measurementId: "G-P01372KFR7"
+    apiKey: "AIzaSyClcgO7Tr24sp8ebDH_-XeZdKBGkTFenOY",
+    authDomain: "homeoneservice.firebaseapp.com",
+    projectId: "homeoneservice",
+    storageBucket: "homeoneservice.firebasestorage.app",
+    messagingSenderId: "916324341644",
+    appId: "1:916324341644:web:994a134f83e926cd9b68a9",
+    measurementId: "G-BCG6Z8T2SS"
 };
 
 
