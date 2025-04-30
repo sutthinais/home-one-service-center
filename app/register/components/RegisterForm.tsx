@@ -25,6 +25,12 @@ import liff from "@line/liff";
 import { CONFIG } from "@/config/dotenv";
 import { toast } from "react-toastify";
 
+declare global {
+  interface Window {
+    recaptchaVerifier?: RecaptchaVerifier;
+  }
+}
+
 const RegisterForm = () => {
   const routeer = useRouter();
   const liffid = CONFIG.NEXT_PUBLIC_LIFF_ID || "";
@@ -54,10 +60,16 @@ const RegisterForm = () => {
   }, [resendContdown]);
 
   useEffect(() => {
-    const recapchVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
-      size: "invisible",
-    });
-    setRecapchVerifier(recapchVerifier);
+    if (!window.recaptchaVerifier) {
+      const verifier = new RecaptchaVerifier(auth, "recaptcha-container", {
+        size: "invisible",
+      });
+      verifier.render(); // สำคัญมาก
+      setRecapchVerifier(verifier);
+      window.recaptchaVerifier = verifier; // เก็บไว้ global กันซ้ำ
+    } else {
+      setRecapchVerifier(window.recaptchaVerifier);
+    }
   }, []);
 
   useEffect(() => {
