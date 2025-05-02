@@ -32,10 +32,6 @@ export default function ContentInvoice() {
 
   const { profile, isReady } = useLiffProfile(liffid);
 
-  if (!isReady) {
-    return redirect("/no-result");
-  }
-
   const { error, data, isFetching } = useQuery<IApiResponse>({
     queryFn: () => CreditWaitingArcustomer(profile!.userId),
     queryKey: ["CreditWaiting", profile?.userId],
@@ -62,11 +58,17 @@ export default function ContentInvoice() {
 
       setRows(items);
     }
+    
     if (error) {
       toast.error(`เกิดข้อผิดพลาด, กรุณาลองใหม่ภายหลัง`);
       return redirect("/no-result");
     }
-  }, [data, error]);
+
+    if (!isReady) {
+      return redirect("/no-result");
+    }
+
+  }, [data, error, isReady]);
 
   if (isFetching) {
     return <Loading open={isFetching} />;
@@ -88,6 +90,7 @@ export default function ContentInvoice() {
           ข้อมูล ณ วันที่ {fDateJs(newDate)} เวลา {fTime(newDate)} น.
         </Typography>
       </Stack>
+
       <Box
         sx={{
           bgcolor: "#ffff",

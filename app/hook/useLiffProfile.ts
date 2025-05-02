@@ -7,28 +7,24 @@ const useLiffProfile = (liffId: string) => {
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    const initializeLiff = async () => {
+    const initLiff = async () => {
       try {
-        toast.success(`Wellcome`);
         await liff.init({ liffId });
         if (!liff.isLoggedIn()) {
-          // liff.login();
-          throw "not support external browser";
-        } else {
-          const userProfile = await liff.getProfile();
-          if (!userProfile) throw "user is null";
-          setProfile(userProfile);
-          setIsReady(true);
-          toast.success(`ยินดีตอนรับ คุณ ${userProfile?.displayName}`);
+          setIsReady(false);
+          throw new Error("not support external browser");
         }
+        const userProfile = await liff.getProfile();
+        setProfile(userProfile);
+        setIsReady(true);
       } catch (err) {
         toast.error(`${err}`);
+        console.error("LIFF error:", err);
         setIsReady(false);
       }
     };
 
-    initializeLiff();
-
+    initLiff();
   }, [liffId]);
 
   return { profile, isReady };
