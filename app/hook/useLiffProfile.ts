@@ -12,6 +12,7 @@ const useLiffProfile = (liffId: string) => {
         await liff.init({ liffId });
         if (!liff.isLoggedIn()) {
           setIsReady(false);
+          liff.login();
           throw new Error("not support external browser");
         }
         const userProfile = await liff.getProfile();
