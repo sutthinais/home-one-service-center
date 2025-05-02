@@ -24,16 +24,18 @@ import { CONFIG } from "@/config/dotenv";
 import { redirect } from "next/navigation";
 import { fDateJs, fTime } from "@/utils/format-time";
 
-const liffid = CONFIG.NEXT_PUBLIC_LIFF_ID || "";
+const liffid = CONFIG.NEXT_PUBLIC_LIFF_ID_INVOICE || "";
 
 export default function ContentInvoice() {
   const newDate = new Date();
   const [rows, setRows] = useState<IData[]>([]);
 
   const { profile, isReady } = useLiffProfile(liffid);
+
   if (!isReady) {
     return redirect("/no-result");
   }
+
   const { error, data, isFetching } = useQuery<IApiResponse>({
     queryFn: () => CreditWaitingArcustomer(profile!.userId),
     queryKey: ["CreditWaiting", profile?.userId],
