@@ -102,6 +102,10 @@ const RegisterForm = () => {
       if (recapchVerifier) {
         try {
           recapchVerifier.clear();
+          const container = document.getElementById("recaptcha-container");
+          if (container) {
+            container.innerHTML = ""; // ล้างเนื้อหาเก่าออกก่อน
+          }
         } catch (e: any) {
           throw e;
         }
