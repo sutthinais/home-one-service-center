@@ -64,7 +64,7 @@ export default function ContentInvoice() {
       // return redirect("/no-result");
     }
 
-    toast.error(`${isReady}`);
+    toast.error(`is Ready: ${isReady}`);
     // if (!isReady) {
     //   return redirect("/no-result");
     // }
