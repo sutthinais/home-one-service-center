@@ -9,6 +9,7 @@ const useLiffProfile = (liffId: string) => {
   useEffect(() => {
     const initializeLiff = async () => {
       try {
+        toast.success(`Wellcome`);
         await liff.init({ liffId });
         if (!liff.isLoggedIn()) {
           // liff.login();
@@ -21,7 +22,7 @@ const useLiffProfile = (liffId: string) => {
           toast.success(`ยินดีตอนรับ คุณ ${userProfile?.displayName}`);
         }
       } catch (err) {
-        // toast.error(`${err}`);
+        toast.error(`${err}`);
         setIsReady(false);
       }
     };
