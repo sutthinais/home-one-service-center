@@ -25,12 +25,6 @@ import liff from "@line/liff";
 import { CONFIG } from "@/config/dotenv";
 import { toast } from "react-toastify";
 
-declare global {
-  interface Window {
-    recaptchaVerifier?: RecaptchaVerifier;
-  }
-}
-
 const RegisterForm = () => {
   const routeer = useRouter();
   const liffid = CONFIG.NEXT_PUBLIC_LIFF_ID || "";
@@ -60,16 +54,10 @@ const RegisterForm = () => {
   }, [resendContdown]);
 
   useEffect(() => {
-    if (!window.recaptchaVerifier) {
-      const verifier = new RecaptchaVerifier(auth, "recaptcha-container", {
-        size: "invisible",
-      });
-      verifier.render(); // สำคัญมาก
-      setRecapchVerifier(verifier);
-      window.recaptchaVerifier = verifier; // เก็บไว้ global กันซ้ำ
-    } else {
-      setRecapchVerifier(window.recaptchaVerifier);
-    }
+    const recapchVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
+      size: "invisible",
+    });
+    setRecapchVerifier(recapchVerifier);
   }, []);
 
   useEffect(() => {
@@ -93,19 +81,32 @@ const RegisterForm = () => {
       const user = await findUserById();
       if (!user) throw new Error("User not found");
 
-      if (!recapchVerifier)
+      if (!recapchVerifier) {
         throw new Error("recapchVerifier is not initialized");
+      } else {
+        recapchVerifier.clear();
+      }
 
       // ตรวจสอบหมายเลขโทรศัพท์และปรับรูปแบบ
       const formattedPhoneNumber = phoneNumber.startsWith("0")
         ? phoneNumber.slice(1)
         : phoneNumber;
 
+      const newRecapchVerifier = new RecaptchaVerifier(
+        auth,
+        "recaptcha-container",
+        {
+          size: "invisible",
+        }
+      );
+      await newRecapchVerifier.render();
+      setRecapchVerifier(newRecapchVerifier);
+
       // ส่ง OTP
       const confirmationResult = await signInWithPhoneNumber(
         auth,
         `+66${formattedPhoneNumber}`,
-        recapchVerifier
+        newRecapchVerifier
       );
 
       setConfirmationResult(confirmationResult);
@@ -119,8 +120,7 @@ const RegisterForm = () => {
       } else if (e.message === "User not found") {
         setError("ท่านไม่ได้เป็นสมาชิก กรุณาติดต่อโฮมวันใกล้บ้านคุณ");
       } else {
-        setError("ส่ง OTP ไม่สำเร็จ กรุณาลองอีกครั้งในภายหลัง\n" + e.message);
-        console.log(e);
+        setError("ส่ง OTP ไม่สำเร็จ กรุณาลองอีกครั้งในภายหลัง");
       }
     } finally {
       setLoading(false);
