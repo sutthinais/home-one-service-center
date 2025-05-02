@@ -33,7 +33,7 @@ export default function ContentInvoice() {
   const { profile, isReady } = useLiffProfile(liffid);
 
   const { error, data, isFetching } = useQuery<IApiResponse>({
-    queryFn: () => CreditWaitingArcustomer(profile!.userId),
+    queryFn: () => CreditWaitingArcustomer(profile?.userId),
     queryKey: ["CreditWaiting", profile?.userId],
     enabled: isReady && !!profile,
     gcTime: 0,
@@ -58,16 +58,15 @@ export default function ContentInvoice() {
 
       setRows(items);
     }
-    
+
     if (error) {
-      toast.error(`เกิดข้อผิดพลาด, กรุณาลองใหม่ภายหลัง`);
+      toast.error(`${error}`);
       return redirect("/no-result");
     }
 
     if (!isReady) {
       return redirect("/no-result");
     }
-
   }, [data, error, isReady]);
 
   if (isFetching) {
