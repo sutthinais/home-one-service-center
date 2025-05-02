@@ -53,7 +53,7 @@ export default function ContentInvoice() {
         return redirect("/no-result");
       }
       if (items.length === 0) {
-        // return redirect("/no-result");
+        return redirect("/no-result");
       }
 
       setRows(items);
@@ -61,13 +61,8 @@ export default function ContentInvoice() {
 
     if (error) {
       toast.error(`${error}`);
-      // return redirect("/no-result");
+      return redirect("/no-result");
     }
-
-    toast.error(`is Ready: ${isReady}`);
-    // if (!isReady) {
-    //   return redirect("/no-result");
-    // }
   }, [data, error, isReady]);
 
   if (isFetching) {
@@ -75,97 +70,100 @@ export default function ContentInvoice() {
   }
 
   return (
-    <Box>
-      <Stack mb={5}>
-        <Typography textAlign={"center"} mt={3} variant="h2">
-          ยอดรอชำระที่กำลังจะถึง
-        </Typography>
-        <Typography
-          sx={{
-            color: "gray",
-          }}
-          variant="caption"
-          textAlign={"center"}
-        >
-          ข้อมูล ณ วันที่ {fDateJs(newDate)} เวลา {fTime(newDate)} น.
-        </Typography>
-      </Stack>
-
-      <Box
-        sx={{
-          bgcolor: "#ffff",
-        }}
-      >
-        <Divider />
-
-        <Stack
-          sx={{
-            ml: 2,
-            mt: 2,
-          }}
-        >
-          <Typography>เรียนลูกค้า: {rows[0]?.ar_name}</Typography>
+    profile && (
+      <Box>
+        <Stack mb={5}>
+          <Typography textAlign={"center"} mt={3} variant="h2">
+            ยอดรอชำระที่กำลังจะถึง
+          </Typography>
           <Typography
             sx={{
               color: "gray",
             }}
+            variant="caption"
+            textAlign={"center"}
           >
-            รหัสลูกค้า: {rows[0]?.ar_code} กลุ่มลูกค้า: {rows[0]?.ar_group_name}
+            ข้อมูล ณ วันที่ {fDateJs(newDate)} เวลา {fTime(newDate)} น.
           </Typography>
         </Stack>
-        <Stack spacing={2}>
-          {rows &&
-            rows.map((s) => (
-              <Accordion
-                defaultExpanded
-                disableGutters
-                key={s.branch_code}
-                elevation={0}
-              >
-                <AccordionSummary
-                  expandIcon={<ExpandMore />}
-                  aria-controls="panel1-content"
-                  id="panel1-header"
-                >
-                  <Stack>
-                    <Typography variant="h6">{s.branch_name}</Typography>
-                    <Typography variant="h6" color="error">
-                      ({fNumber(s.sum_debt_amount)})
-                    </Typography>
-                  </Stack>
-                </AccordionSummary>
 
-                <AccordionDetails
-                  sx={{
-                    p: 0,
-                  }}
-                >
-                  <Box
-                    mb={2}
-                    display={"flex"}
-                    justifyContent={"space-between"}
-                  ></Box>
-                  <TableInvoice rows={s.detail} />
-                </AccordionDetails>
-              </Accordion>
-            ))}
-        </Stack>
-      </Box>
+        <Box
+          sx={{
+            bgcolor: "#ffff",
+          }}
+        >
+          <Divider />
 
-      <Box
-        mt={2}
-        sx={{
-          height: "5vh",
-        }}
-      >
-        <Typography>หมายเหตุ</Typography>
-        <Typography color="text.secondary" variant="caption">
-          กรณีที่ปรากฎว่าข้อมูลในเอกสารฉบับนี้ไม่ตรงกับข้อมูลในระบบของบริษัท
-          ให้ถือว่าข้อมูลในระบบของบริษัท เป็นข้อมูลที่ถูกต้อง
-          หากต้องการเอกสารฉบับที่มีการรับรองโดยบริษัท
-          กรุณาติดต่อได้ที่ทุกสาขาของบริษัท
-        </Typography>
+          <Stack
+            sx={{
+              ml: 2,
+              mt: 2,
+            }}
+          >
+            <Typography>เรียนลูกค้า: {rows[0]?.ar_name}</Typography>
+            <Typography
+              sx={{
+                color: "gray",
+              }}
+            >
+              รหัสลูกค้า: {rows[0]?.ar_code} กลุ่มลูกค้า:{" "}
+              {rows[0]?.ar_group_name}
+            </Typography>
+          </Stack>
+          <Stack spacing={2}>
+            {rows &&
+              rows.map((s) => (
+                <Accordion
+                  defaultExpanded
+                  disableGutters
+                  key={s.branch_code}
+                  elevation={0}
+                >
+                  <AccordionSummary
+                    expandIcon={<ExpandMore />}
+                    aria-controls="panel1-content"
+                    id="panel1-header"
+                  >
+                    <Stack>
+                      <Typography variant="h6">{s.branch_name}</Typography>
+                      <Typography variant="h6" color="error">
+                        ({fNumber(s.sum_debt_amount)})
+                      </Typography>
+                    </Stack>
+                  </AccordionSummary>
+
+                  <AccordionDetails
+                    sx={{
+                      p: 0,
+                    }}
+                  >
+                    <Box
+                      mb={2}
+                      display={"flex"}
+                      justifyContent={"space-between"}
+                    ></Box>
+                    <TableInvoice rows={s.detail} />
+                  </AccordionDetails>
+                </Accordion>
+              ))}
+          </Stack>
+        </Box>
+
+        <Box
+          mt={2}
+          sx={{
+            height: "5vh",
+          }}
+        >
+          <Typography>หมายเหตุ</Typography>
+          <Typography color="text.secondary" variant="caption">
+            กรณีที่ปรากฎว่าข้อมูลในเอกสารฉบับนี้ไม่ตรงกับข้อมูลในระบบของบริษัท
+            ให้ถือว่าข้อมูลในระบบของบริษัท เป็นข้อมูลที่ถูกต้อง
+            หากต้องการเอกสารฉบับที่มีการรับรองโดยบริษัท
+            กรุณาติดต่อได้ที่ทุกสาขาของบริษัท
+          </Typography>
+        </Box>
       </Box>
-    </Box>
+    )
   );
 }
