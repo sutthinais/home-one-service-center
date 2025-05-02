@@ -35,8 +35,8 @@ const RegisterForm = () => {
   const [error, setError] = useState<string | null>(null);
   const [resendContdown, setResendCountdown] = useState(0);
 
-  const [recapchVerifier, setRecapchVerifier] =
-    useState<RecaptchaVerifier | null>(null);
+  // const [recapchVerifier, setRecapchVerifier] =
+  //   useState<RecaptchaVerifier | null>(null);
 
   const [confirmationResult, setConfirmationResult] =
     useState<ConfirmationResult | null>(null);
@@ -53,12 +53,12 @@ const RegisterForm = () => {
     return () => clearTimeout(timer);
   }, [resendContdown]);
 
-  useEffect(() => {
-    const recapchVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
-      size: "invisible",
-    });
-    setRecapchVerifier(recapchVerifier);
-  }, []);
+  // useEffect(() => {
+  //   const recapchVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
+  //     size: "invisible",
+  //   });
+  //   setRecapchVerifier(recapchVerifier);
+  // }, []);
 
   useEffect(() => {
     const hashEnterAllDigits = otp.length === 6;
@@ -81,11 +81,15 @@ const RegisterForm = () => {
       const user = await findUserById();
       if (!user) throw new Error("User not found");
 
-      if (!recapchVerifier) {
-        throw new Error("recapchVerifier is not initialized");
-      } else {
-        recapchVerifier.clear();
-      }
+      // if (!recapchVerifier) {
+      //   throw new Error("recapchVerifier is not initialized");
+      // } else {
+      //   recapchVerifier.clear();
+      // }
+
+      // if (recapchVerifier) {
+      // recapchVerifier.clear();
+      // }
 
       // ตรวจสอบหมายเลขโทรศัพท์และปรับรูปแบบ
       const formattedPhoneNumber = phoneNumber.startsWith("0")
@@ -100,7 +104,7 @@ const RegisterForm = () => {
         }
       );
       await newRecapchVerifier.render();
-      setRecapchVerifier(newRecapchVerifier);
+      // setRecapchVerifier(newRecapchVerifier);
 
       // ส่ง OTP
       const confirmationResult = await signInWithPhoneNumber(
@@ -120,9 +124,7 @@ const RegisterForm = () => {
       } else if (e.message === "User not found") {
         setError("ท่านไม่ได้เป็นสมาชิก กรุณาติดต่อโฮมวันใกล้บ้านคุณ");
       } else {
-        setError(
-          `ส่ง OTP ไม่สำเร็จ กรุณาลองอีกครั้งในภายหลัง ${e} ${e.message}`
-        );
+        setError("ส่ง OTP ไม่สำเร็จ กรุณาลองอีกครั้งในภายหลัง");
       }
     } finally {
       setLoading(false);
