@@ -35,6 +35,7 @@ const RegisterForm = () => {
   const [otp, setOtp] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [resendContdown, setResendCountdown] = useState(0);
+  const [otpExpired, setOtpExpired] = useState(false);
 
   const [recapchVerifier, setRecapchVerifier] =
     useState<RecaptchaVerifier | null>(null);
@@ -49,6 +50,7 @@ const RegisterForm = () => {
     if (resendContdown > 0) {
       timer = setInterval(() => {
         setResendCountdown((prev) => prev - 1);
+        if (prev === 0) setOtpExpired(true);
       }, 1000);
     }
     return () => clearTimeout(timer);
@@ -134,17 +136,40 @@ const RegisterForm = () => {
 
       setConfirmationResult(confirmationResult);
       setResendCountdown(60);
+      setOtpExpired(false);
     } catch (e: any) {
       setResendCountdown(0);
       if (e.code === "auth/invalid-phone-number") {
-        setError("หมายเลขโทรศัพท์ไม่ถูกต้อง");
+        setError("หมายเลขโทรศัพท์ไม่ถูกต้อง กรุณาตรวจสอบอีกครั้ง");
+      } else if (e.code === "auth/missing-phone-number") {
+        setError("กรุณากรอกหมายเลขโทรศัพท์");
       } else if (e.code === "auth/too-many-requests") {
-        setError("Too many requests");
+        setError("คุณทำรายการบ่อยเกินไป กรุณาลองใหม่อีกครั้งในอีก 5 นาที");
+      } else if (e.code === "auth/quota-exceeded") {
+        setError("มีการส่ง OTP เกินจำนวนที่กำหนด กรุณาลองใหม่ในภายหลัง");
+      } else if (e.code === "auth/code-expired") {
+        setError("รหัส OTP หมดอายุ กรุณาขอรหัสใหม่");
+      } else if (e.code === "auth/invalid-verification-code") {
+        setError("รหัส OTP ไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง");
+      } else if (e.code === "auth/missing-verification-code") {
+        setError("กรุณากรอกรหัส OTP");
+      } else if (e.code === "auth/missing-verification-id") {
+        setError("ไม่พบข้อมูลการยืนยัน กรุณาทำรายการใหม่อีกครั้ง");
+      } else if (e.code === "auth/app-not-authorized") {
+        setError(
+          "แอปนี้ยังไม่ได้รับอนุญาตใช้งานเบอร์โทร กรุณาติดต่อผู้ดูแลระบบ"
+        );
+      } else if (e.code === "auth/network-request-failed") {
+        setError(
+          "ไม่สามารถเชื่อมต่อเครือข่ายได้ กรุณาตรวจสอบอินเทอร์เน็ตของคุณ"
+        );
+      } else if (e.code === "auth/captcha-check-failed") {
+        setError("การตรวจสอบความปลอดภัยล้มเหลว กรุณาลองใหม่อีกครั้งในภายหลัง");
       } else if (e.message === "User not found") {
         setError("ท่านไม่ได้เป็นสมาชิก กรุณาติดต่อโฮมวันใกล้บ้านคุณ");
       } else {
         setError(
-          `ส่ง OTP ไม่สำเร็จ กรุณาลองอีกครั้งในภายหลัง ${e} ${e.code} ${e.message}`
+          `ส่ง OTP ไม่สำเร็จ กรุณาลองอีกครั้งในภายหลัง (${e} ${e.code})`
         );
       }
     } finally {
@@ -153,6 +178,10 @@ const RegisterForm = () => {
   };
 
   const verifyOtp = async () => {
+    if (otpExpired) {
+      setError("รหัส OTP หมดอายุ กรุณาขอรหัสใหม่");
+      return;
+    }
     setError(null);
     setLoading(true);
     startTransition(async () => {
