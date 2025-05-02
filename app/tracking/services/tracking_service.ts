@@ -32,10 +32,11 @@ export const useLiff = (
             userProfile?.userId ?? ""
           );
           setData(response);
+          toast.success(`ยินดีตอนรับ คุณ ${userProfile?.displayName}`);
           // toast.success('เข้าสู่ระบบสำเร็จ');
         }
       } catch (err) {
-        toast.success(`${err}`);
+        // toast.error(`${err}`);
         setIsLoggedIn(false);
       } finally {
         setLoading(false);
