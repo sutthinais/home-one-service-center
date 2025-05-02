@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { Box, Button, Stack, TextField, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
 import {
@@ -37,11 +37,13 @@ const RegisterForm = () => {
   const [resendContdown, setResendCountdown] = useState(0);
   const [otpExpired, setOtpExpired] = useState(false);
 
-  const [recapchVerifier, setRecapchVerifier] =
-    useState<RecaptchaVerifier | null>(null);
+  // const [recapchVerifier, setRecapchVerifier] =
+  //   useState<RecaptchaVerifier | null>(null);
 
   const [confirmationResult, setConfirmationResult] =
     useState<ConfirmationResult | null>(null);
+
+  const recapchVerifierRef = useRef<RecaptchaVerifier | null>(null);
 
   const [isPending, startTransition] = useTransition();
 
@@ -50,13 +52,28 @@ const RegisterForm = () => {
     if (resendContdown > 0) {
       timer = setInterval(() => {
         setResendCountdown((prev) => {
-          if (prev === 0) setOtpExpired(true);
           return prev - 1;
         });
       }, 1000);
+    } else {
+      setOtpExpired(true);
     }
     return () => clearTimeout(timer);
   }, [resendContdown]);
+
+  useEffect(() => {
+    if (!recapchVerifierRef.current) {
+      const verifier = new RecaptchaVerifier(auth, "recaptcha-container", {
+        size: "invisible",
+        callback: (response: any) => {
+          console.log("Recaptcha verified:", response);
+        },
+      });
+      verifier.render().then(() => {
+        recapchVerifierRef.current = verifier;
+      });
+    }
+  }, []);
 
   // useEffect(() => {
   //   const recapchVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
@@ -103,41 +120,44 @@ const RegisterForm = () => {
         ? phoneNumber.slice(1)
         : phoneNumber;
 
-      if (recapchVerifier) {
-        try {
-          recapchVerifier.clear();
-          const container = document.getElementById("recaptcha-container");
-          if (container) {
-            container.innerHTML = ""; // ล้างเนื้อหาเก่าออกก่อน
-          }
-        } catch (e: any) {
-          throw e;
-        }
-      }
+      // if (recapchVerifier) {
+      //   try {
+      //     recapchVerifier.clear();
+      //     const container = document.getElementById("recaptcha-container");
+      //     if (container) {
+      //       container.innerHTML = ""; // ล้างเนื้อหาเก่าออกก่อน
+      //     }
+      //   } catch (e: any) {
+      //     throw e;
+      //   }
+      // }
 
-      const newRecapchVerifier = new RecaptchaVerifier(
-        auth,
-        "recaptcha-container",
-        {
-          size: "invisible",
-          callback: (response: any) => {
-            console.log("Recaptcha verified:", response);
-            setError(`Recaptcha verified ${response}`);
-          },
-        } as RecaptchaParameters
-      );
-      await newRecapchVerifier.render();
-      setRecapchVerifier(newRecapchVerifier);
+      const verifier = recapchVerifierRef.current;
+      if (!verifier) throw new Error("Recaptcha verifier not initialized");
+      // const newRecapchVerifier = new RecaptchaVerifier(
+      //   auth,
+      //   "recaptcha-container",
+      //   {
+      //     size: "invisible",
+      //     callback: (response: any) => {
+      //       console.log("Recaptcha verified:", response);
+      //       setError(`Recaptcha verified ${response}`);
+      //     },
+      //   } as RecaptchaParameters
+      // );
+      // await newRecapchVerifier.render();
+      // setRecapchVerifier(newRecapchVerifier);
 
       // ส่ง OTP
       const confirmationResult = await signInWithPhoneNumber(
         auth,
         `+66${formattedPhoneNumber}`,
-        newRecapchVerifier
+        verifier
       );
 
       setConfirmationResult(confirmationResult);
-      setResendCountdown(60);
+
+      setResendCountdown(300);
       setOtpExpired(false);
     } catch (e: any) {
       setResendCountdown(0);
@@ -169,6 +189,8 @@ const RegisterForm = () => {
         setError("การตรวจสอบความปลอดภัยล้มเหลว กรุณาลองใหม่อีกครั้งในภายหลัง");
       } else if (e.message === "User not found") {
         setError("ท่านไม่ได้เป็นสมาชิก กรุณาติดต่อโฮมวันใกล้บ้านคุณ");
+      } else if (e.code === "auth/invalid-app-credential") {
+        setError("กรอกหมายเลขท์ไม่ถูกต้อง");
       } else {
         setError(
           `ส่ง OTP ไม่สำเร็จ กรุณาลองอีกครั้งในภายหลัง (${e} ${e.code})`
@@ -315,11 +337,8 @@ const RegisterForm = () => {
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
-                  // borderRadius: 2,
-                  // border: `1px solid ${grey[400]}`,
                 }}
               >
-                {/* <Typography color={`${grey[700]}`}>+66 </Typography> */}
                 <TextField
                   type="tel"
                   variant="outlined"
@@ -393,7 +412,10 @@ const RegisterForm = () => {
               align="left"
               sx={{ fontSize: "1rem", color: grey[600] }}
             >
-              ข้อความพร้อมรหัส 6 หลักได้ถูกส่งไปยัง 0{phoneNumber}
+              ข้อความพร้อมรหัส 6 หลักได้ถูกส่งไปยัง{" "}
+              <Typography component={"span"} fontWeight={"bold"}>
+                {phoneNumber}
+              </Typography>
               การดำเนินการดังกล่าว
               ช่วยให้เราสามารถรักษาความปลอดภัยของบัญชีของคุณได้โดยการยืนยันว่าเป็นคุณจริงๆ
             </Typography>
