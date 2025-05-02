@@ -5,6 +5,7 @@ import { Box, Button, Stack, TextField, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
 import {
   ConfirmationResult,
+  RecaptchaParameters,
   RecaptchaVerifier,
   signInWithPhoneNumber,
 } from "firebase/auth";
@@ -35,8 +36,8 @@ const RegisterForm = () => {
   const [error, setError] = useState<string | null>(null);
   const [resendContdown, setResendCountdown] = useState(0);
 
-  // const [recapchVerifier, setRecapchVerifier] =
-  //   useState<RecaptchaVerifier | null>(null);
+  const [recapchVerifier, setRecapchVerifier] =
+    useState<RecaptchaVerifier | null>(null);
 
   const [confirmationResult, setConfirmationResult] =
     useState<ConfirmationResult | null>(null);
@@ -91,20 +92,34 @@ const RegisterForm = () => {
       // recapchVerifier.clear();
       // }
 
+      // ✅ ล้าง recaptcha ตัวเก่าก่อน (ถ้ามี)
+
       // ตรวจสอบหมายเลขโทรศัพท์และปรับรูปแบบ
       const formattedPhoneNumber = phoneNumber.startsWith("0")
         ? phoneNumber.slice(1)
         : phoneNumber;
+
+      if (recapchVerifier) {
+        try {
+          recapchVerifier.clear();
+        } catch (e: any) {
+          throw e;
+        }
+      }
 
       const newRecapchVerifier = new RecaptchaVerifier(
         auth,
         "recaptcha-container",
         {
           size: "invisible",
-        }
+          callback: (response: any) => {
+            console.log("Recaptcha verified:", response);
+            setError(`Recaptcha verified ${response}`);
+          },
+        } as RecaptchaParameters
       );
       await newRecapchVerifier.render();
-      // setRecapchVerifier(newRecapchVerifier);
+      setRecapchVerifier(newRecapchVerifier);
 
       // ส่ง OTP
       const confirmationResult = await signInWithPhoneNumber(
