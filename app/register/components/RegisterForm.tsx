@@ -49,8 +49,10 @@ const RegisterForm = () => {
     let timer: NodeJS.Timeout;
     if (resendContdown > 0) {
       timer = setInterval(() => {
-        setResendCountdown((prev) => prev - 1);
-        if (prev === 0) setOtpExpired(true);
+        setResendCountdown((prev) => {
+          if (prev === 0) setOtpExpired(true);
+          return prev - 1;
+        });
       }, 1000);
     }
     return () => clearTimeout(timer);
