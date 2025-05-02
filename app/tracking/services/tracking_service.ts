@@ -34,9 +34,11 @@ export const useLiff = (
           // toast.success('เข้าสู่ระบบสำเร็จ');
         }
       } catch (err) {
+        toast.success(`${err}`);
         setIsLoggedIn(false);
       } finally {
         setLoading(false);
+
       }
     };
 
