@@ -53,7 +53,7 @@ export default function ContentInvoice() {
         return redirect("/no-result");
       }
       if (items.length === 0) {
-        return redirect("/no-result");
+        // return redirect("/no-result");
       }
 
       setRows(items);
@@ -61,12 +61,13 @@ export default function ContentInvoice() {
 
     if (error) {
       toast.error(`${error}`);
-      return redirect("/no-result");
+      // return redirect("/no-result");
     }
 
-    if (!isReady) {
-      return redirect("/no-result");
-    }
+    toast.error(`${isReady}`);
+    // if (!isReady) {
+    //   return redirect("/no-result");
+    // }
   }, [data, error, isReady]);
 
   if (isFetching) {
