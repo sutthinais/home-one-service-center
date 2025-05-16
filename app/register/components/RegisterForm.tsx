@@ -10,8 +10,7 @@ import React, { useState, useEffect, useTransition, FocusEvent } from "react";
 
 import { useRouter } from "next/navigation";
 import { auth } from "@/firebase";
-import Loading from "./Loading";
-import { set } from "date-fns";
+import { MuiOtpInput } from "mui-one-time-password-input";
 import { toast } from "react-toastify";
 import liff from "@line/liff";
 import { CONFIG } from "@/config/dotenv";
@@ -225,9 +224,9 @@ const RegisterForm = () => {
         }}
       >
         <CardHeader
-          avatar={<ShieldCheck size={40} color={green[500]} />}
+          avatar={<ShieldCheck size={60} color={green[500]} />}
           title={
-            <Typography variant="h5" fontWeight="bold" textAlign="center">
+            <Typography variant="body1" fontWeight="nomal" textAlign="center">
               กรุณาระบุหมายเลขโทรศัพท์ของคุณ (ที่ลงทะเบียนไว้กับ บริษัท
               ศิริมหาชัย โฮมเซ็นเตอร์ จำกัด)
             </Typography>
@@ -311,10 +310,17 @@ const RegisterForm = () => {
                 </Typography>
                 {/* <Typography typography={span}>{phoneNumber}</Typography> */}
               </Typography>
-              <OTP
+              {/* <OTP
                 value={otp}
                 onChange={handleOTPChange}
                 separator=""
+                length={6}
+              /> */}
+              <MuiOtpInput
+                slot="input"
+                gap={0.5}
+                value={otp}
+                onChange={handleOTPChange}
                 length={6}
               />
               <Button
