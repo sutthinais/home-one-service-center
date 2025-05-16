@@ -20,6 +20,14 @@ import { useRouter } from "next/navigation";
 import { auth } from "@/firebase";
 import Loading from "./Loading";
 import { set } from "date-fns";
+import { toast } from "react-toastify";
+import liff from "@line/liff";
+import { CONFIG } from "@/config/dotenv";
+import {
+  findUserByIdService,
+  registerUserByTaxId,
+  useLiff,
+} from "../services/regisger_service";
 
 const RegisterForm = () => {
   const router = useRouter();
@@ -33,6 +41,9 @@ const RegisterForm = () => {
   const [confirmationResult, setConfirmationResult] =
     useState<ConfirmationResult | null>(null);
   const [isPending, startTrangition] = useTransition();
+
+  const liffid = CONFIG.NEXT_PUBLIC_LIFF_ID || "";
+  const { profile, isLoggedIn } = useLiff(liffid);
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -55,6 +66,42 @@ const RegisterForm = () => {
     };
   }, [auth]);
 
+  useEffect(() => {
+    const hasEnteredAllDigits = otp.length === 6;
+    if (hasEnteredAllDigits) {
+      verifyOtp();
+    }
+  }, [otp]);
+
+  const verifyOtp = async () => {
+    startTrangition(async () => {
+      setError("");
+      if (!confirmationResult) {
+        setError("please request OTP first");
+        return;
+      }
+      try {
+        await confirmationResult.confirm(otp);
+        if (!profile) throw "กรุณาเข้าระบบผ่านแอปพลิเคชั่นไลน์";
+        const response = await registerUserByTaxId(
+          phoneNumber,
+          profile?.userId ?? ""
+        );
+        if (response.status === 200) {
+          if (response.data.status === 1) {
+            throw new Error(`${response.data.message}`);
+          }
+          toast.success("ลงทะเบียนสำเร็จ");
+          liff.closeWindow();
+        } else {
+          throw new Error("ลงทะเบียนไม่สำเร็จกรุณาลองใหม่อีกครั้ง");
+        }
+      } catch (e: any) {
+        setError("OTP ไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง");
+      }
+    });
+  };
+
   const requestOtp = async (e?: React.FormEvent<HTMLFormElement>) => {
     e?.preventDefault();
     setResendCountdown(60);
@@ -64,13 +111,19 @@ const RegisterForm = () => {
         return setError("Recaptcha not initialized");
       }
       try {
+        const user = await findUserById();
+        if (!user) throw new Error("ไม่พบข้อมูลผู้ใช้ กรุณาลองใหม่อีกครั้ง");
+
+        const formattedPhoneNumber = phoneNumber.startsWith("0")
+          ? phoneNumber.slice(1)
+          : phoneNumber;
         const confirmationResult = await signInWithPhoneNumber(
           auth,
-          phoneNumber,
+          `+66${formattedPhoneNumber}`,
           recaptchaVerifier
         );
         setConfirmationResult(confirmationResult);
-        setSuccess("OTP sent successfully");
+        setSuccess("ส่ง OTP สำเร็จ กรุณาตรวจสอบ SMS");
       } catch (e: any) {
         // setError(e.message);
         setResendCountdown(0);
@@ -109,10 +162,29 @@ const RegisterForm = () => {
         } else {
           errorMessage = "เกิดข้อผิดพลาดในการส่ง OTP กรุณาลองใหม่อีกครั้ง";
         }
-
+        // alert(e.message);
         setError(errorMessage);
       }
     });
+  };
+
+  const findUserById = async (): Promise<string | null> => {
+    try {
+      const response = await findUserByIdService(phoneNumber);
+      console.log("findUserByIdService response:", response);
+      if (response.status === 200) {
+        if (response.data.status === 1) {
+          throw new Error(`${response.data.message}`);
+        }
+        const userId = response.data.data;
+        return userId;
+      } else {
+        throw new Error("Invalid response status");
+      }
+    } catch (e: any) {
+      console.error("findUserById error:", e);
+      return null;
+    }
   };
 
   return (
@@ -123,13 +195,37 @@ const RegisterForm = () => {
             type="tel"
             placeholder="เบอร์โทรศัพท์ "
             value={phoneNumber}
+            maxLength={10}
+            required
             onChange={(e) => setPhoneNumber(e.target.value)}
           />
         </form>
       )}
 
+      {confirmationResult && (
+        <InputOTP
+          maxLength={6}
+          value={otp}
+          onChange={(value: string) => setOtp(value)}
+        >
+          <InputOTPGroup>
+            <InputOTPSlot index={0} />
+            <InputOTPSlot index={1} />
+            <InputOTPSlot index={2} />
+            {/* <InputOTPSeparator /> */}
+            <InputOTPSlot index={3} />
+            <InputOTPSlot index={4} />
+            <InputOTPSlot index={5} />
+          </InputOTPGroup>
+        </InputOTP>
+      )}
       <Button
-        disabled={!phoneNumber || isPending || resendCountdown > 0}
+        disabled={
+          !phoneNumber ||
+          isPending ||
+          resendCountdown > 0 ||
+          phoneNumber.length < 10
+        }
         onClick={() => requestOtp()}
       >
         {resendCountdown > 0
