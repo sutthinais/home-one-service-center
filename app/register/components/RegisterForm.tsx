@@ -8,14 +8,6 @@ import {
 
 import React, { useState, useEffect, useTransition, FocusEvent } from "react";
 
-import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSeparator,
-  InputOTPSlot,
-} from "@/components/ui/input-otp";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { auth } from "@/firebase";
 import Loading from "./Loading";
@@ -28,6 +20,20 @@ import {
   registerUserByTaxId,
   useLiff,
 } from "../services/regisger_service";
+
+import { ShieldCheck } from "@phosphor-icons/react";
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  CircularProgress,
+  TextField,
+  Typography,
+} from "@mui/material";
+import { OTP } from "@/components/Otp";
+import { green } from "@mui/material/colors";
 
 const RegisterForm = () => {
   const router = useRouter();
@@ -97,6 +103,8 @@ const RegisterForm = () => {
           throw new Error("ลงทะเบียนไม่สำเร็จกรุณาลองใหม่อีกครั้ง");
         }
       } catch (e: any) {
+        setSuccess("");
+        setOtp("");
         setError("OTP ไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง");
       }
     });
@@ -107,6 +115,8 @@ const RegisterForm = () => {
     setResendCountdown(60);
     startTrangition(async () => {
       setError("");
+      setOtp("");
+      setSuccess("");
       if (!recaptchaVerifier) {
         return setError("Recaptcha not initialized");
       }
@@ -126,6 +136,7 @@ const RegisterForm = () => {
         setSuccess("ส่ง OTP สำเร็จ กรุณาตรวจสอบ SMS");
       } catch (e: any) {
         // setError(e.message);
+        setSuccess("");
         setResendCountdown(0);
         let errorMessage = "";
         if (e.code === "auth/invalid-phone-number") {
@@ -187,60 +198,163 @@ const RegisterForm = () => {
     }
   };
 
-  return (
-    <div>
-      {!confirmationResult && (
-        <form onSubmit={requestOtp}>
-          <Input
-            type="tel"
-            placeholder="เบอร์โทรศัพท์ "
-            value={phoneNumber}
-            maxLength={10}
-            required
-            onChange={(e) => setPhoneNumber(e.target.value)}
-          />
-        </form>
-      )}
+  const handleOTPChange = (e: React.SetStateAction<string>) => {
+    setOtp(e);
+    setError(null); // ล้าง error เมื่อผู้ใช้พิมพ์ OTP
+  };
 
-      {confirmationResult && (
-        <InputOTP
-          maxLength={6}
-          value={otp}
-          onChange={(value: string) => setOtp(value)}
-        >
-          <InputOTPGroup>
-            <InputOTPSlot index={0} />
-            <InputOTPSlot index={1} />
-            <InputOTPSlot index={2} />
-            {/* <InputOTPSeparator /> */}
-            <InputOTPSlot index={3} />
-            <InputOTPSlot index={4} />
-            <InputOTPSlot index={5} />
-          </InputOTPGroup>
-        </InputOTP>
-      )}
-      <Button
-        disabled={
-          !phoneNumber ||
-          isPending ||
-          resendCountdown > 0 ||
-          phoneNumber.length < 10
-        }
-        onClick={() => requestOtp()}
+  return (
+    <Box
+      sx={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)",
+        padding: 2,
+      }}
+    >
+      <Card
+        sx={{
+          maxWidth: { sm: 1000, md: 800 },
+          width: "100%",
+          boxShadow: 3,
+          borderRadius: 2,
+          border: "1px solid",
+          borderColor: "grey.200",
+        }}
       >
-        {resendCountdown > 0
-          ? `Resend OTP in ${resendCountdown}s`
-          : isPending
-          ? `Sending OTP...`
-          : `Request OTP`}
-      </Button>
-      <div className="p-10 text-center">
-        {error && <p className="text-red-500">{error}</p>}
-        {success && <p className="text-green-500">{success}</p>}
-      </div>
-      <Loading open={isPending} />
-      <div id="recaptcha-container" />
-    </div>
+        <CardHeader
+          avatar={<ShieldCheck size={40} color={green[500]} />}
+          title={
+            <Typography variant="h5" fontWeight="bold" textAlign="center">
+              กรุณาระบุหมายเลขโทรศัพท์ของคุณ (ที่ลงทะเบียนไว้กับ บริษัท
+              ศิริมหาชัย โฮมเซ็นเตอร์ จำกัด)
+            </Typography>
+          }
+          // subheader={
+          //   <Typography
+          //     variant="body2"
+          //     color="text.secondary"
+          //     textAlign="center"
+          //   >
+          //     กรุณากรอกหมายเลขโทรศัพท์ที่ลงทะเบียนกับ HomeOne <br />
+          //     เราจะส่งรหัสยืนยันไปยังหมายเลขโทรศัพท์ของคุณ
+          //   </Typography>
+          // }
+          sx={{
+            flexDirection: "column",
+            gap: 2,
+            alignItems: "center",
+            paddingBottom: 0,
+          }}
+        />
+        <CardContent
+          sx={{ padding: 3, display: "flex", flexDirection: "column", gap: 3 }}
+        >
+          {!confirmationResult ? (
+            <Box
+              component="form"
+              onSubmit={requestOtp}
+              sx={{ display: "flex", flexDirection: "column", gap: 2 }}
+            >
+              <TextField
+                type="tel"
+                label="หมายเลขโทรศัพท์ (10 หลัก)"
+                value={phoneNumber}
+                inputProps={{ maxLength: 10 }}
+                required
+                onChange={(e) => setPhoneNumber(e.target.value)}
+                fullWidth
+                variant="outlined"
+                error={phoneNumber.length > 0 && phoneNumber.length < 10}
+                helperText={
+                  phoneNumber.length > 0 && phoneNumber.length < 10
+                    ? "กรุณากรอกหมายเลขโทรศัพท์ให้ครบ 10 หลัก"
+                    : ""
+                }
+              />
+              <Button
+                type="submit"
+                disabled={!phoneNumber || isPending || phoneNumber.length < 10}
+                variant="contained"
+                color="primary"
+                fullWidth
+                sx={{
+                  height: 50,
+                  fontSize: "1.1rem",
+                  borderRadius: 1,
+                  backgroundColor: "teal",
+                  "&:hover": { backgroundColor: "#00695c" },
+                }}
+              >
+                {isPending ? (
+                  <CircularProgress size={24} color="inherit" />
+                ) : (
+                  "ขอรหัส OTP"
+                )}
+              </Button>
+            </Box>
+          ) : (
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+              <Typography
+                variant="body2"
+                textAlign="center"
+                color="text.secondary"
+              >
+                กรุณากรอกรหัส OTP ที่ส่งไปยัง{"  "}
+                <Typography
+                  component="span"
+                  sx={{ fontWeight: "bold", color: "black" }}
+                >
+                  {phoneNumber}
+                </Typography>
+                {/* <Typography typography={span}>{phoneNumber}</Typography> */}
+              </Typography>
+              <OTP
+                value={otp}
+                onChange={handleOTPChange}
+                separator=""
+                length={6}
+              />
+              <Button
+                disabled={isPending || resendCountdown > 0}
+                onClick={() => requestOtp()}
+                variant="contained"
+                color="primary"
+                fullWidth
+                sx={{
+                  height: 50,
+                  fontSize: "1.1rem",
+                  borderRadius: 1,
+                  backgroundColor: "teal",
+                  "&:hover": { backgroundColor: "#00695c" },
+                }}
+              >
+                {resendCountdown > 0 ? (
+                  `ส่ง OTP อีกครั้งใน ${resendCountdown} วินาที`
+                ) : isPending ? (
+                  <CircularProgress size={24} color="inherit" />
+                ) : (
+                  "ส่ง OTP อีกครั้ง"
+                )}
+              </Button>
+            </Box>
+          )}
+          {error && (
+            <Typography variant="body2" color="error" textAlign="center">
+              {error}
+            </Typography>
+          )}
+          {success && (
+            <Typography variant="body2" color="success.main" textAlign="center">
+              {success}
+            </Typography>
+          )}
+          <div id="recaptcha-container" />
+        </CardContent>
+      </Card>
+    </Box>
   );
 };
 

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Input as BaseInput } from "@mui/base/Input";
-import { Box, styled } from "@mui/system";
+import { Box, height, styled } from "@mui/system";
 
 export function OTP({
   separator,
