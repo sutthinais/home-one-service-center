@@ -83,27 +83,56 @@ const RegisterForm: React.FC = () => {
       const user = await findUserById();
       if (!user) throw new Error("User not found");
 
-      let formattedPhoneNumber = phoneNumber;
-      if (formattedPhoneNumber.startsWith("0")) {
-        formattedPhoneNumber = formattedPhoneNumber.replace("0", "+66");
-      }
-
-      if (!formattedPhoneNumber.match(/^\+\d{10,15}$/)) {
-        alert("Please enter  phone number 0123456789");
-        return;
-      }
+      const formattedPhoneNumber = phoneNumber.startsWith("0")
+        ? phoneNumber.slice(1)
+        : phoneNumber;
+      toast.success(`send otp to +66${formattedPhoneNumber}`);
       const confirmation = await signInWithPhoneNumber(
         auth,
-        formattedPhoneNumber,
+        `+66${formattedPhoneNumber}`,
         recaptchaVerifierRef.current!
       );
       setConfirmationResult(confirmation);
       setOtpSent(true);
       setPhoneNumber("");
-      alert("OTP has been sent");
-    } catch (error: any) {
-      console.error(error);
-      alert(`Failed to send OTP: ${error.message}`);
+    } catch (e: any) {
+      setResendCountdown(0);
+      if (e.code === "auth/invalid-phone-number") {
+        setError("หมายเลขโทรศัพท์ไม่ถูกต้อง กรุณาตรวจสอบอีกครั้ง");
+      } else if (e.code === "auth/missing-phone-number") {
+        setError("กรุณากรอกหมายเลขโทรศัพท์");
+      } else if (e.code === "auth/too-many-requests") {
+        setError("คุณทำรายการบ่อยเกินไป กรุณาลองใหม่อีกครั้งในอีก 5 นาที");
+      } else if (e.code === "auth/quota-exceeded") {
+        setError("มีการส่ง OTP เกินจำนวนที่กำหนด กรุณาลองใหม่ในภายหลัง");
+      } else if (e.code === "auth/code-expired") {
+        setError("รหัส OTP หมดอายุ กรุณาขอรหัสใหม่");
+      } else if (e.code === "auth/invalid-verification-code") {
+        setError("รหัส OTP ไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง");
+      } else if (e.code === "auth/missing-verification-code") {
+        setError("กรุณากรอกรหัส OTP");
+      } else if (e.code === "auth/missing-verification-id") {
+        setError("ไม่พบข้อมูลการยืนยัน กรุณาทำรายการใหม่อีกครั้ง");
+      } else if (e.code === "auth/app-not-authorized") {
+        setError(
+          "แอปนี้ยังไม่ได้รับอนุญาตใช้งานเบอร์โทร กรุณาติดต่อผู้ดูแลระบบ"
+        );
+      } else if (e.code === "auth/network-request-failed") {
+        setError(
+          "ไม่สามารถเชื่อมต่อเครือข่ายได้ กรุณาตรวจสอบอินเทอร์เน็ตของคุณ"
+        );
+      } else if (e.code === "auth/captcha-check-failed") {
+        setError("การตรวจสอบความปลอดภัยล้มเหลว กรุณาลองใหม่อีกครั้งในภายหลัง");
+      } else if (e.message === "User not found") {
+        setError("ท่านไม่ได้เป็นสมาชิก กรุณาติดต่อโฮมวันใกล้บ้านคุณ");
+      } else if (e.code === "auth/invalid-app-credential") {
+        setError("กรอกหมายเลขโทรศัพท์ไม่ถูกต้อง");
+      } else {
+        setError(
+          `ส่ง OTP ไม่สำเร็จ กรุณาลองอีกครั้งในภายหลัง (${e} ${e.code})`
+        );
+      }
+      alert(`Failed to verify OTP: ${e.message}`);
     } finally {
       setIsLoading(false);
     }
