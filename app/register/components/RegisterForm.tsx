@@ -17,6 +17,7 @@ import Grid from "@mui/material/Grid2";
 import { grey, red, teal } from "@mui/material/colors";
 import Loading from "./Loading";
 import { ShieldCheck } from "@phosphor-icons/react";
+import { toast } from "react-toastify";
 
 const RegisterForm: React.FC = () => {
   const [phoneNumber, setPhoneNumber] = useState<string>("");
@@ -81,7 +82,8 @@ const RegisterForm: React.FC = () => {
     try {
       const user = await findUserById();
       if (!user) throw new Error("User not found");
-      let formattedPhoneNumber = `+${phoneNumber.replace(/\D/g, "")}`;
+
+      let formattedPhoneNumber = phoneNumber;
       if (formattedPhoneNumber.startsWith("0")) {
         formattedPhoneNumber = formattedPhoneNumber.replace("0", "+66");
       }
@@ -171,6 +173,7 @@ const RegisterForm: React.FC = () => {
         if (response.data.status === 1)
           throw new Error(`${response.data.message}`);
         userId = response.data.data;
+        // toast.success(userId);
         return userId;
       } else {
         throw "error";
@@ -247,14 +250,14 @@ const RegisterForm: React.FC = () => {
                 alignItems: "center",
               }}
             >
-              <Box flex={1}>
+              {/* <Box flex={1}>
                 <Typography
                   align="left"
                   sx={{ fontSize: "1rem", textAlign: "left" }}
                 >
                   หมายเลขโทรศัพท์
                 </Typography>
-              </Box>
+              </Box> */}
             </Stack>
             <Stack
               display={"flex"}
@@ -271,7 +274,7 @@ const RegisterForm: React.FC = () => {
                   alignItems: "center",
                 }}
               >
-                <TextField
+                {/* <TextField
                   type="tel"
                   variant="outlined"
                   inputProps={{ min: 0, style: { textAlign: "center" } }}
@@ -282,7 +285,17 @@ const RegisterForm: React.FC = () => {
                   required
                   disabled={true}
                   value="+66 "
-                ></TextField>
+                ></TextField> */}
+                <Button
+                  fullWidth
+                  variant="contained"
+                  sx={{
+                    height: 57,
+                    textAlign: "center",
+                  }}
+                >
+                  +66
+                </Button>
               </Box>
               <Box sx={{ width: 5 }}></Box>
               <Box
@@ -375,7 +388,7 @@ const RegisterForm: React.FC = () => {
           onClick={handleSendOtp}
           variant="contained"
           fullWidth
-          sx={{ mt: 3, mb: 0 }}
+          sx={{ mt: 3, mb: 0, height: 57 }}
           type="button"
           disabled={
             !phoneNumber || phoneNumber.length !== 10 || resendContdown > 0
