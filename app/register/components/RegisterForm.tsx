@@ -1,13 +1,19 @@
-'use client';
-import React, { useState, useEffect, useRef } from 'react';
-import { getAuth, RecaptchaVerifier, signInWithPhoneNumber, ConfirmationResult } from 'firebase/auth';
-import { app } from '../../../config';
-import { useRouter } from 'next/navigation';
+"use client";
+import React, { useState, useEffect, useRef } from "react";
+import {
+  getAuth,
+  RecaptchaVerifier,
+  signInWithPhoneNumber,
+  ConfirmationResult,
+} from "firebase/auth";
+import { app } from "../../../config";
+import { useRouter } from "next/navigation";
 
 const Login: React.FC = () => {
-  const [phoneNumber, setPhoneNumber] = useState<string>('');
-  const [otp, setOtp] = useState<string>('');
-  const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
+  const [phoneNumber, setPhoneNumber] = useState<string>("");
+  const [otp, setOtp] = useState<string>("");
+  const [confirmationResult, setConfirmationResult] =
+    useState<ConfirmationResult | null>(null);
   const [otpSent, setOtpSent] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const recaptchaVerifierRef = useRef<RecaptchaVerifier | null>(null);
@@ -15,11 +21,15 @@ const Login: React.FC = () => {
   const router = useRouter();
 
   useEffect(() => {
-    recaptchaVerifierRef.current = new RecaptchaVerifier(auth, 'recaptcha-container', {
-      size: 'invisible',
-      callback: () => {},
-      'expired-callback': () => {},
-    });
+    recaptchaVerifierRef.current = new RecaptchaVerifier(
+      auth,
+      "recaptcha-container",
+      {
+        size: "invisible",
+        callback: () => {},
+        "expired-callback": () => {},
+      }
+    );
 
     return () => {
       if (recaptchaVerifierRef.current) {
@@ -41,16 +51,22 @@ const Login: React.FC = () => {
     if (isLoading) return;
     setIsLoading(true);
     try {
-      const formattedPhoneNumber = `+${phoneNumber.replace(/\D/g, '')}`;
+      const formattedPhoneNumber = `+${phoneNumber.replace(/\D/g, "")}`;
       if (!formattedPhoneNumber.match(/^\+\d{10,15}$/)) {
-        alert('Please enter a valid phone number with country code (e.g., +1234567890)');
+        alert(
+          "Please enter a valid phone number with country code (e.g., +1234567890)"
+        );
         return;
       }
-      const confirmation = await signInWithPhoneNumber(auth, formattedPhoneNumber, recaptchaVerifierRef.current!);
+      const confirmation = await signInWithPhoneNumber(
+        auth,
+        formattedPhoneNumber,
+        recaptchaVerifierRef.current!
+      );
       setConfirmationResult(confirmation);
       setOtpSent(true);
-      setPhoneNumber('');
-      alert('OTP has been sent');
+      setPhoneNumber("");
+      alert("OTP has been sent");
     } catch (error: any) {
       console.error(error);
       alert(`Failed to send OTP: ${error.message}`);
@@ -65,11 +81,11 @@ const Login: React.FC = () => {
     try {
       if (confirmationResult) {
         await confirmationResult.confirm(otp);
-        setOtp('');
-        alert('OTP confirmed successfully');
-        router.push('/dashboard');
+        setOtp("");
+        alert("OTP confirmed successfully");
+        router.push("/dashboard");
       } else {
-        alert('OTP confirmation is not available. Please request a new OTP.');
+        alert("OTP confirmation is not available. Please request a new OTP.");
       }
     } catch (error: any) {
       console.error(error);
@@ -103,10 +119,12 @@ const Login: React.FC = () => {
 
       <button
         onClick={otpSent ? handleOTPSubmit : handleSendOtp}
-        className={`w-full text-white py-3 rounded-md ${otpSent ? 'bg-green-500' : 'bg-blue-500'} ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+        className={`w-full text-white py-3 rounded-md ${
+          otpSent ? "bg-green-500" : "bg-blue-500"
+        } ${isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
         disabled={isLoading}
       >
-        {isLoading ? 'Processing...' : otpSent ? 'Submit OTP' : 'Send OTP'}
+        {isLoading ? "Processing..." : otpSent ? "Submit OTP" : "Send OTP"}
       </button>
     </div>
   );
