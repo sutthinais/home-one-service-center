@@ -5,6 +5,7 @@ import { Prompt, Sarabun } from "next/font/google";
 import { grey } from "@mui/material/colors";
 import { Bounce, ToastContainer } from "react-toastify";
 import ReactQueryProvider from "./react-query/ReactQueryProvider";
+import "./globals.css";
 
 const noto_th = Sarabun({
   weight: ["300", "400", "500", "700"],
@@ -31,7 +32,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="th" style={{ backgroundColor: 'white' }}>
+    <html lang="th" style={{ backgroundColor: "white" }}>
       <meta name="mobile-web-app-capable" content="yes" />
       <meta name="apple-mobile-web-app-capable" content="yes" />
       <body className={noto_th.variable} style={{ margin: 0, padding: 0 }}>
