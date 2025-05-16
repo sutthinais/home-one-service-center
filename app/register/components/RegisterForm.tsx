@@ -18,7 +18,7 @@ import { grey, red, teal } from "@mui/material/colors";
 import Loading from "./Loading";
 import { ShieldCheck } from "@phosphor-icons/react";
 
-const Login: React.FC = () => {
+const RegisterForm: React.FC = () => {
   const [phoneNumber, setPhoneNumber] = useState<string>("");
   const [otp, setOtp] = useState<string>("");
   const [confirmationResult, setConfirmationResult] =
@@ -426,3 +426,4 @@ const Login: React.FC = () => {
   //   </div>
   // );
 };
+export default RegisterForm;
