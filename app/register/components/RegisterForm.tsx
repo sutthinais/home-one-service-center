@@ -35,6 +35,7 @@ const RegisterForm: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const recaptchaVerifierRef = useRef<RecaptchaVerifier | null>(null);
   const auth = getAuth(app);
+  auth.languageCode = "th";
   const router = useRouter();
   const liffid = CONFIG.NEXT_PUBLIC_LIFF_ID || "";
   const { profile, isLoggedIn } = useLiff(liffid);
@@ -45,7 +46,9 @@ const RegisterForm: React.FC = () => {
       "recaptcha-container",
       {
         size: "invisible",
-        callback: () => {},
+        callback: () => {
+          toast.info("ผ่านการตรวจสอบความปลอดภัย");
+        },
         "expired-callback": () => {},
       }
     );
