@@ -6,46 +6,34 @@ import { IData } from "@/app/types/IBillingTransaction ";
 import { useQuery } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Box,
-  Divider,
-  Stack,
-  Typography,
-} from "@mui/material";
-import { fNumber } from "@/utils/format-number";
-import ExpandMore from "@mui/icons-material/ExpandMore";
-import TableInvoice from "./TableInvoice";
+import { Box, Divider, Stack, Typography } from "@mui/material";
 import Loading from "@/app/register/components/Loading";
 import useLiffProfile from "@/app/hook/useLiffProfile";
 import { CONFIG } from "@/config/dotenv";
 import { redirect } from "next/navigation";
 import { fDateJs, fTime } from "@/utils/format-time";
+import DataGridInvoice from "./DataGridInvoice";
 
-const liffid = CONFIG.NEXT_PUBLIC_LIFF_ID || "";
+const liffid = CONFIG.NEXT_PUBLIC_LIFF_ID_INVOICE || "";
 
 export default function ContentInvoice() {
   const newDate = new Date();
   const [rows, setRows] = useState<IData[]>([]);
-
-  const { profile, isReady } = useLiffProfile(liffid);
-  if (!isReady) {
-    return redirect("/no-result");
-  }
-  const { error, data, isFetching } = useQuery<IApiResponse>({
-    queryFn: () => CreditWaitingArcustomer(profile!.userId),
-    queryKey: ["CreditWaiting", profile?.userId],
-    enabled: isReady && !!profile,
-    gcTime: 0,
-  });
-
+  // const profile = true;
+  // const isReady = true;
   // const { error, data, isFetching } = useQuery<IApiResponse>({
   //   queryFn: () => CreditWaitingArcustomer("U9c35e388d140d7173c08374ca65cc035"),
   //   queryKey: ["CreditWaiting"],
   //   gcTime: 0,
   // });
+
+  const { profile, isReady } = useLiffProfile(liffid);
+  const { error, data, isFetching } = useQuery<IApiResponse>({
+    queryFn: () => CreditWaitingArcustomer(profile?.userId),
+    queryKey: ["CreditWaiting", profile?.userId],
+    enabled: isReady && !!profile,
+    gcTime: 0,
+  });
 
   useEffect(() => {
     if (data) {
@@ -60,107 +48,103 @@ export default function ContentInvoice() {
 
       setRows(items);
     }
+
     if (error) {
-      toast.error(`เกิดข้อผิดพลาด, กรุณาลองใหม่ภายหลัง`);
+      toast.error(`${error}`);
       return redirect("/no-result");
     }
-  }, [data, error]);
+  }, [data, error, isReady]);
 
   if (isFetching) {
     return <Loading open={isFetching} />;
   }
 
   return (
-    <Box>
-      <Stack mb={5}>
-        <Typography textAlign={"center"} mt={3} variant="h2">
-          ยอดรอชำระที่กำลังจะถึง
-        </Typography>
+    profile && (
+      <Box>
+        <Stack>
+          <Typography textAlign={"center"} mt={4} variant="h2">
+            ยอดรอชำระที่กำลังจะถึง
+          </Typography>
+          <Typography textAlign={"center"}>
+            เรียนลูกค้า: {rows[0]?.ar_name}
+          </Typography>
+          <Typography textAlign={"center"}>
+            รหัสลูกค้า: {rows[0]?.ar_code} กลุ่มลูกค้า: {rows[0]?.ar_group_name}
+          </Typography>
+          <Typography textAlign={"center"}></Typography>
+        </Stack>
         <Typography
           sx={{
-            color: "gray",
+            color: "text.secondary",
+            mt: 0,
           }}
-          variant="caption"
+          // variant="caption"
+          fontSize={"0.65rem"}
           textAlign={"center"}
         >
           ข้อมูล ณ วันที่ {fDateJs(newDate)} เวลา {fTime(newDate)} น.
         </Typography>
-      </Stack>
-      <Box
-        sx={{
-          bgcolor: "#ffff",
-        }}
-      >
-        <Divider />
 
-        <Stack
+        <Box
+          mt={5}
           sx={{
-            ml: 2,
-            mt: 2,
+            bgcolor: "#ffff",
           }}
         >
-          <Typography>เรียนลูกค้า: {rows[0]?.ar_name}</Typography>
-          <Typography
-            sx={{
-              color: "gray",
-            }}
-          >
-            รหัสลูกค้า: {rows[0]?.ar_code} กลุ่มลูกค้า: {rows[0]?.ar_group_name}
+          <Divider />
+
+          <Stack spacing={2} mt={2}>
+            {rows &&
+              rows.map((s) => (
+                // <Accordion
+                //   defaultExpanded
+                //   disableGutters
+                //   key={s.branch_code}
+                //   elevation={0}
+                // >
+                //   <AccordionSummary
+                //     expandIcon={<ExpandMore />}
+                //     aria-controls="panel1-content"
+                //     id="panel1-header"
+                //   >
+                //     <Stack>
+                //       <Typography variant="h6">{s.branch_name}</Typography>
+                //       <Typography variant="h6" color="error">
+                //         ({fNumber(s.sum_debt_amount)})
+                //       </Typography>
+                //     </Stack>
+                //   </AccordionSummary>
+
+                //   <AccordionDetails
+                //     sx={{
+                //       p: 0,
+                //     }}
+                //   >
+                //     <Box
+                //       mb={2}
+                //       display={"flex"}
+                //       justifyContent={"space-between"}
+                //     ></Box>
+                //     {/* <TableInvoice rows={s.detail} /> */}
+
+                //   </AccordionDetails>
+                // </Accordion>
+                <DataGridInvoice key={s.branch_code} data={s} />
+              ))}
+          </Stack>
+        </Box>
+
+        <Box mt={2} pb={5}>
+          <Typography>หมายเหตุ</Typography>
+          <Typography color="text.secondary" fontSize={"0.65rem"}>
+            กรณีที่ปรากฎว่าข้อมูลในเอกสารฉบับนี้ไม่ตรงกับข้อมูลในระบบของบริษัท
+            ให้ถือว่าข้อมูลในระบบของบริษัท เป็นข้อมูลที่ถูกต้อง
+            หากต้องการเอกสารฉบับที่มีการรับรองโดยบริษัท
+            กรุณาติดต่อได้ที่ทุกสาขาของบริษัท
           </Typography>
-        </Stack>
-        <Stack spacing={2}>
-          {rows &&
-            rows.map((s) => (
-              <Accordion
-                defaultExpanded
-                disableGutters
-                key={s.branch_code}
-                elevation={0}
-              >
-                <AccordionSummary
-                  expandIcon={<ExpandMore />}
-                  aria-controls="panel1-content"
-                  id="panel1-header"
-                >
-                  <Stack>
-                    <Typography variant="h6">{s.branch_name}</Typography>
-                    <Typography variant="h6" color="error">
-                      ({fNumber(s.sum_debt_amount)})
-                    </Typography>
-                  </Stack>
-                </AccordionSummary>
-
-                <AccordionDetails
-                  sx={{
-                    p: 0,
-                  }}
-                >
-                  <Box
-                    mb={2}
-                    display={"flex"}
-                    justifyContent={"space-between"}
-                  ></Box>
-                  <TableInvoice rows={s.detail} />
-                </AccordionDetails>
-              </Accordion>
-            ))}
-        </Stack>
+        </Box>
       </Box>
-
-      <Box
-        mt={2}
-        sx={{
-          height: "5vh",
-        }}
-      >
-        <Typography>หมายเหตุ</Typography>
-        <Typography color="text.secondary" variant="caption">
-          กรณีที่ปรากฎว่าข้อมูลในเอกสารฉบับนี้ไม่ตรงกับข้อมูลในระบบของบริษัท
-          ให้ถือว่าข้อมูลในระบบของบริษัท เป็นข้อมูลที่ถูกต้อง
-          หากต้องการเอกสารฉบับที่มีการรับรองโดยบริษัท
-          กรุณาติดต่อได้ที่ทุกสาขาของบริษัท
-        </Typography>
-      </Box>
-    </Box>
+    )
   );
 }

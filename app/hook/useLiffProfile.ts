@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import liff from "@line/liff";
+import { toast } from "react-toastify";
 
 const useLiffProfile = (liffId: string) => {
   const [profile, setProfile] = useState<any>(null);
@@ -16,7 +17,9 @@ const useLiffProfile = (liffId: string) => {
         const userProfile = await liff.getProfile();
         setProfile(userProfile);
         setIsReady(true);
+        toast.success(`ยินดีต้อนรับคุณ ${userProfile.displayName}!`);
       } catch (err) {
+        toast.error(`${err}`);
         console.error("LIFF error:", err);
         setIsReady(false);
       }

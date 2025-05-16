@@ -31,7 +31,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="th" style={{ backgroundColor: grey[100] }}>
+    <html lang="th" style={{ backgroundColor: 'white' }}>
       <meta name="mobile-web-app-capable" content="yes" />
       <meta name="apple-mobile-web-app-capable" content="yes" />
       <body className={noto_th.variable} style={{ margin: 0, padding: 0 }}>

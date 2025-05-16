@@ -109,76 +109,76 @@ const themeOptions: ThemeOptions = {
     },
   },
 
-  components: {
-    MuiAccordion: {
-      styleOverrides: {
-        root: {
-          "&:before": {
-            backgroundColor: "transparent",
-          },
-        },
-      },
-    },
-    MuiOutlinedInput: {
-      styleOverrides: {
-        root: {
-          "& .MuiOutlinedInput-notchedOutline": {
-            border: "greay[400]",
+  // components: {
+  //   MuiAccordion: {
+  //     styleOverrides: {
+  //       root: {
+  //         "&:before": {
+  //           backgroundColor: "transparent",
+  //         },
+  //       },
+  //     },
+  //   },
+  //   MuiOutlinedInput: {
+  //     styleOverrides: {
+  //       root: {
+  //         "& .MuiOutlinedInput-notchedOutline": {
+  //           border: "greay[400]",
 
-            borderRadius: 6,
-          },
-          "&.Mui-focused": {
-            "& .MuiOutlinedInput-notchedOutline": {
-              border: `1px solid ${blue[600]}`,
-            },
-            borderRadius: 6,
-          },
-        },
-      },
-    },
+  //           borderRadius: 6,
+  //         },
+  //         "&.Mui-focused": {
+  //           "& .MuiOutlinedInput-notchedOutline": {
+  //             border: `1px solid ${blue[600]}`,
+  //           },
+  //           borderRadius: 6,
+  //         },
+  //       },
+  //     },
+  //   },
 
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          borderRadius: 6,
-          // color: "#FFFFFF",
-          // border: `1px solid ${grey[900]}`,
-          // backgroundColor: grey[900],
-          textTransform: "none",
-          boxShadow: "none",
-          height: 47,
+  //   MuiButton: {
+  //     styleOverrides: {
+  //       root: {
+  //         borderRadius: 6,
+  //         // color: "#FFFFFF",
+  //         // border: `1px solid ${grey[900]}`,
+  //         // backgroundColor: grey[900],
+  //         textTransform: "none",
+  //         boxShadow: "none",
+  //         height: 47,
 
-          "-:disabled": {
-            backgroundColor: grey[400],
-            color: grey[100],
-          },
-          "&:focus": {
-            boxShadow: "none",
-          },
-          "&:hover": {
-            boxShadow: "none",
-          },
-          "&:active": {
-            boxShadow: "none",
-          },
-        },
-      },
-      defaultProps: {
-        disableElevation: true,
-      },
-    },
+  //         "-:disabled": {
+  //           backgroundColor: grey[400],
+  //           color: grey[100],
+  //         },
+  //         "&:focus": {
+  //           boxShadow: "none",
+  //         },
+  //         "&:hover": {
+  //           boxShadow: "none",
+  //         },
+  //         "&:active": {
+  //           boxShadow: "none",
+  //         },
+  //       },
+  //     },
+  //     defaultProps: {
+  //       disableElevation: true,
+  //     },
+  //   },
 
-    MuiTableCell: {
-      styleOverrides: {
-        head: ({ theme }) => ({
-          fontSize: theme.typography.pxToRem(14),
-          //color: theme.vars.palette.text.secondary,
-          //fontWeight: theme.typography.fontWeightSemiBold,
-          //backgroundColor: theme.vars.palette.background.neutral,
-        }),
-      },
-    },
-  },
+    // MuiTableCell: {
+    //   styleOverrides: {
+    //     head: ({ theme }) => ({
+    //       fontSize: theme.typography.pxToRem(14),
+    //       //color: theme.vars.palette.text.secondary,
+    //       //fontWeight: theme.typography.fontWeightSemiBold,
+    //       //backgroundColor: theme.vars.palette.background.neutral,
+    //     }),
+    //   },
+    // },
+  // },
 };
 
 export const theme = createTheme(themeOptions);

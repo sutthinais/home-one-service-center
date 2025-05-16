@@ -73,7 +73,9 @@ export default function CustomNoRowsOverlay({ label }: Props) {
         </g>
       </svg>
       <Box sx={{ mt: 1 }}>
-        <Typography variant="body1">{label ? label : "ยังไม่มีข้อมูล"}</Typography>
+        <Typography fontSize={"0.56rem"} variant="body1">
+          {label ? label : "ยังไม่มีข้อมูล"}
+        </Typography>
       </Box>
     </StyledGridOverlay>
   );

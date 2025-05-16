@@ -98,11 +98,11 @@ export default function TrackingPage({
       mt={{ xs: 0, md: 2 }}
       p={0}
       sx={{
-        backgroundColor: grey[100],
+        backgroundColor: "white",
       }}
     >
       <Loading open={loading} />
-      <Grid sx={{ backgroundColor: grey[100] }} size={{ xs: 12, md: 8 }}>
+      <Grid  size={{ xs: 12, md: 8 }}>
         <Box
           sx={{
             // width: "100%",
@@ -121,11 +121,11 @@ export default function TrackingPage({
                 alignItems: "center",
               }}
             >
-              <Image src={Logo.src} alt="Logo" width={100} height={45}></Image>
+              {/* <Image src={Logo.src} alt="Logo" width={100} height={45}></Image> */}
               <Typography
                 variant="h4"
                 mb={0.5}
-                display={{ xs: "none", md: "block" }}
+                // display={{ xs: "none", md: "block" }}
               >
                 ติดตามสถานะจัดส่งสินค้า
               </Typography>
@@ -155,20 +155,13 @@ export default function TrackingPage({
                 fullWidth
               />
 
-              {/* <TextField
-                label="หมายเลขบิลขาย"
-                variant="outlined"
-                fullWidth
-                value={billNumber}
-                onChange={(e) => setBillNumber(e.target.value)}
-                sx={{ height: "58px" }}
-              /> */}
+           
 
               <Button
                 onClick={() => {
                   fetchTrackingData(profile?.userId ?? "");
                 }}
-                sx={{ height: "50px", flex: 1 }}
+                sx={{ flex: 1 }}
                 variant="contained"
                 fullWidth
                 type="button"
