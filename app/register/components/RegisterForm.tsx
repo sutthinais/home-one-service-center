@@ -10,7 +10,11 @@ import {
 } from "firebase/auth";
 import { app } from "../../../config";
 import { useRouter } from "next/navigation";
-import { findUserByIdService, useLiff } from "../services/regisger_service";
+import {
+  findUserByIdService,
+  registerUserByTaxId,
+  useLiff,
+} from "../services/regisger_service";
 import { CONFIG } from "@/config/dotenv";
 import { OTP } from "@/components/Otp";
 import Grid from "@mui/material/Grid2";
@@ -18,6 +22,7 @@ import { grey, red, teal } from "@mui/material/colors";
 import Loading from "./Loading";
 import { ShieldCheck } from "@phosphor-icons/react";
 import { toast } from "react-toastify";
+import liff from "@line/liff";
 
 const RegisterForm: React.FC = () => {
   const [phoneNumber, setPhoneNumber] = useState<string>("");
@@ -95,6 +100,7 @@ const RegisterForm: React.FC = () => {
       setConfirmationResult(confirmation);
       setOtpSent(true);
       setPhoneNumber("");
+      setResendCountdown(300);
     } catch (e: any) {
       setResendCountdown(0);
       if (e.code === "auth/invalid-phone-number") {
@@ -145,8 +151,29 @@ const RegisterForm: React.FC = () => {
       if (confirmationResult) {
         await confirmationResult.confirm(otp);
         setOtp("");
-        alert("OTP confirmed successfully");
+
+        // alert("OTP confirmed successfully");
         // router.push("/dashboard");
+
+        try {
+          await confirmationResult?.confirm(otp);
+          var response = await registerUserByTaxId(
+            phoneNumber,
+            profile?.userId ?? ""
+          );
+          if (response.status === 200) {
+            if (response.data.status === 1)
+              throw new Error(`${response.data.message}`);
+            toast.success("ลงทะเบียนสำเร็จ");
+            liff.closeWindow();
+          } else {
+            throw response;
+          }
+        } catch (error) {
+          setError(`ยืนยันรหัส OTP ไม่สำเร็จ กรุณาลองอีกครั้ง. ${error}`);
+        } finally {
+          setIsLoading(false);
+        }
       } else {
         alert("OTP confirmation is not available. Please request a new OTP.");
       }
@@ -319,7 +346,7 @@ const RegisterForm: React.FC = () => {
                   fullWidth
                   variant="contained"
                   sx={{
-                    height: 57,
+                    height: 55,
                     textAlign: "center",
                   }}
                 >
@@ -417,7 +444,7 @@ const RegisterForm: React.FC = () => {
           onClick={handleSendOtp}
           variant="contained"
           fullWidth
-          sx={{ mt: 3, mb: 0, height: 57 }}
+          sx={{ mt: 3, mb: 0, height: 55 }}
           type="button"
           disabled={
             !phoneNumber || phoneNumber.length !== 10 || resendContdown > 0
