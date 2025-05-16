@@ -8,7 +8,7 @@ import {
   signInWithPhoneNumber,
   ConfirmationResult,
 } from "firebase/auth";
-import { app } from "../../../config";
+import { app } from "@/firebase";
 import { useRouter } from "next/navigation";
 import {
   findUserByIdService,
