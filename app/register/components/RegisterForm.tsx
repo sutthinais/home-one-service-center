@@ -52,6 +52,8 @@ const Login: React.FC = () => {
     setIsLoading(true);
     try {
       const formattedPhoneNumber = `+${phoneNumber.replace(/\D/g, "")}`;
+      if (formattedPhoneNumber.startsWith("0"))
+        formattedPhoneNumber.replace("0", "+66");
       if (!formattedPhoneNumber.match(/^\+\d{10,15}$/)) {
         alert(
           "Please enter a valid phone number with country code (e.g., +1234567890)"
