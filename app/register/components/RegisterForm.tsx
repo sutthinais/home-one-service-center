@@ -74,7 +74,7 @@ const RegisterForm: React.FC = () => {
   }, [resendContdown]);
 
   const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPhoneNumber(e.target.value);
+    setPhoneNumber(e.target.value.replace(/[^0-9]/g, ""));
   };
 
   const handleOTPChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -91,6 +91,9 @@ const RegisterForm: React.FC = () => {
       const formattedPhoneNumber = phoneNumber.startsWith("0")
         ? phoneNumber.slice(1)
         : phoneNumber;
+
+      const verifier = recaptchaVerifierRef.current;
+      if (!verifier) throw new Error("Recaptcha verifier not initialized");
       toast.success(`send otp to +66${formattedPhoneNumber}`);
       const confirmation = await signInWithPhoneNumber(
         auth,
@@ -371,9 +374,7 @@ const RegisterForm: React.FC = () => {
                   variant="outlined"
                   required
                   value={phoneNumber}
-                  onChange={(e) =>
-                    setPhoneNumber(e.target.value.replace(/[^0-9]/g, ""))
-                  }
+                  onChange={handlePhoneNumberChange}
                   placeholder="000-000-0000"
                   fullWidth
                   inputProps={{
@@ -386,7 +387,7 @@ const RegisterForm: React.FC = () => {
           </Stack>
         )}
 
-        {confirmationResult && (
+        {otpSent && (
           <Stack
             sx={{ display: "flex", flexDirection: "column", width: "100%" }}
             spacing={1}
@@ -456,7 +457,7 @@ const RegisterForm: React.FC = () => {
             ? "กำลังขอรหัส OTP..."
             : `ขอรหัส OTP`}
         </Button>
-        <div id="recaptcha-container" />
+        {!otpSent && <Box id="recaptcha-container"></Box>}
       </Grid>
     </Grid>
   );
